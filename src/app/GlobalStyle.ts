@@ -8,6 +8,7 @@ interface GlobalStyleProps {
 }
 
 const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
+  @import url('https://rsms.me/inter/inter.css');
 
   ${({ theme }) => theme.breakpoints.down('md')} {
     html {
@@ -23,31 +24,6 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
     min-height: inherit;
   }
 
-  .link {
-    position: relative;
-    text-decoration: none;
-    transition: 0.2s all;
-    color: ${({ theme }) => theme.palette.text.primary};
-
-    &:hover {
-      &:before {
-        transform: scaleX(1);
-      }
-    }
-
-    &:before {
-      content: '';
-      position: absolute;
-      display: block;
-      width: 100%;
-      height: 2px;
-      bottom: 0;
-      left: 0;
-      background-color: #fff;
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
-  }
 
 `;
 

@@ -1,0 +1,132 @@
+import React, { FC, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { Box, Grid, TextField, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../redux/Store';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { NumericFormat } from 'react-number-format';
+import { useSnackbar } from 'notistack';
+import { LoadingButton } from '@mui/lab';
+
+interface Props {
+    className?: string;
+}
+
+const Component: FC<Props> = ({ className }) => {
+    const { enqueueSnackbar } = useSnackbar();
+    const token = useSelector((state: RootState) => state.app.secret);
+    const [address, setAddress] = useState('');
+    const [amount, setAmount] = useState('');
+    const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
+
+    const {
+        mutate: withdraw,
+        isLoading: isLoadingWithdraw,
+        data: withdrawData,
+        error: withdrawError,
+        isError: isErrorWithdraw,
+    } = useMutation((data: { amount: number; address: string; ticker: string }) => {
+        return axios.post(`${axios.defaults.baseURL}/finance/withdrawal`, { ...data }, { headers: { auth: token } });
+    });
+
+    const handleWithdraw = () => {
+        if (!address || address === '') {
+            enqueueSnackbar('Address field is required for withdrawal', { variant: 'error' });
+            return;
+        }
+
+        if (!amount || amount === '') {
+            enqueueSnackbar('Amount field is required for withdrawal', { variant: 'error' });
+            return;
+        }
+
+        withdraw({ amount: parseFloat(amount), address, ticker: selectedBalance.coin.ticker });
+    };
+
+    useEffect(() => {
+        if (withdrawData && !isLoadingWithdraw) {
+            enqueueSnackbar(`${selectedBalance.coin.ticker} has been successfully sent`, { variant: 'success' });
+            setAddress('');
+            setAmount('');
+        }
+    }, [withdrawData]);
+
+    useEffect(() => {
+        if (withdrawError && isErrorWithdraw) {
+            enqueueSnackbar('Something went wrong', { variant: 'error' });
+            setAddress('');
+            setAmount('');
+        }
+    }, [withdrawError]);
+
+    return (
+        <div className={className}>
+            <Box marginBottom={3}>
+                <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
+                    Amount
+                </Typography>
+                <NumericFormat
+                    value={amount}
+                    customInput={TextField}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Type your amount"
+                    fullWidth
+                    size="small"
+                />
+            </Box>
+            <Box marginBottom={3}>
+                <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
+                    Address
+                </Typography>
+                <TextField
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Type your withdrawal address"
+                    fullWidth
+                    size="small"
+                />
+            </Box>
+            <Box marginBottom={3}>
+                <LoadingButton
+                    loadingPosition="start"
+                    loading={isLoadingWithdraw}
+                    size="large"
+                    onClick={handleWithdraw}
+                    disableElevation
+                    fullWidth
+                    variant="contained"
+                >
+                    Withdraw
+                </LoadingButton>
+            </Box>
+            <Grid container spacing={4}>
+                <Grid item md={6} sm={6} xs={6}>
+                    <Typography variant="subtitle2" color="textSecondary">
+                        Expected arrival
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700}>
+                        {selectedBalance.coin.confirmations} network confirmations
+                    </Typography>
+                </Grid>
+                <Grid item md={6} sm={6} xs={6}>
+                    <Typography variant="subtitle2" color="textSecondary">
+                        Minimum withdraw
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700}>
+                        <NumericFormat
+                            value={selectedBalance.coin.min_withdrawal}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            thousandSeparator
+                            displayType="text"
+                        />{' '}
+                        {selectedBalance.coin.ticker}
+                    </Typography>
+                </Grid>
+            </Grid>
+        </div>
+    );
+};
+
+export default styled(Component)``;

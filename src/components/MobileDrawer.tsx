@@ -1,23 +1,31 @@
 import React, { FC } from 'react';
 import { Container, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import styled from 'styled-components';
-import { MdOutlineClose } from 'react-icons/md';
+import CloseIcon from '@mui/icons-material/Close';
+import { resetState } from '../redux/actions/app';
+import { useAppDispatch } from '../redux/Store';
 import { useHistory } from 'react-router-dom';
-import { scroller } from 'react-scroll';
 
 interface Props {
     className?: string;
     isDrawerOpened: boolean;
+    isAdmin?: boolean;
     setIsDrawerOpened: (arg1: boolean) => void;
 }
 
-const Component: FC<Props> = ({ className, isDrawerOpened, setIsDrawerOpened }) => {
-    const onClose = () => setIsDrawerOpened(false);
+const MobileDrawer: FC<Props> = ({ className, isDrawerOpened, isAdmin, setIsDrawerOpened }) => {
+    const dispatch = useAppDispatch();
     const history = useHistory();
+    const onClose = () => setIsDrawerOpened(false);
 
-    const goTo = (name: string) => {
-        history.push(name);
+    const logout = () => {
         onClose();
+        dispatch(resetState());
+    };
+
+    const goTo = (path: string) => {
+        onClose();
+        history.push(path);
     };
 
     return (
@@ -31,18 +39,30 @@ const Component: FC<Props> = ({ className, isDrawerOpened, setIsDrawerOpened }) 
             <Container>
                 <div className="close-box">
                     <IconButton color="inherit" size="large" onClick={onClose}>
-                        <MdOutlineClose size={24} />
+                        <CloseIcon />
                     </IconButton>
                 </div>
             </Container>
             <List className="mobile-list">
+                {isAdmin && (
+                    <ListItem className="link">
+                        <ListItemButton className="link-text" onClick={() => goTo('/admin')}>
+                            <ListItemText
+                                primary={
+                                    <Typography variant="h6" textTransform="uppercase">
+                                        Admin
+                                    </Typography>
+                                }
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                )}
                 <ListItem className="link">
-                    <ListItemButton onClick={() => goTo('/')}>
+                    <ListItemButton className="link-text" onClick={logout}>
                         <ListItemText
-                            className="link-text"
                             primary={
                                 <Typography variant="h6" textTransform="uppercase">
-                                    Home
+                                    Log out
                                 </Typography>
                             }
                         />
@@ -53,7 +73,7 @@ const Component: FC<Props> = ({ className, isDrawerOpened, setIsDrawerOpened }) 
     );
 };
 
-export default styled(Component)`
+export default styled(MobileDrawer)`
     .mobile-list {
         color: ${({ theme }) => theme.palette.common.white};
     }
@@ -65,8 +85,7 @@ export default styled(Component)`
 
     .paper {
         height: 100%;
-        background: transparent;
-        backdrop-filter: blur(10px);
+        background: ${({ theme }) => theme.palette.primary.main};
     }
 
     .close-box {

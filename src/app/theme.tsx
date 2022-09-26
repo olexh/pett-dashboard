@@ -17,58 +17,38 @@ declare module '@mui/material/styles' {
 
 const theme = createTheme({
     typography: {
-        fontWeightRegular: 300,
-        fontFamily: "'Poppins', 'Space Mono',  'Apple SD Gothic Neo', Helvetica, arial, sans-serif",
+        fontFamily: "'Inter',  'Apple SD Gothic Neo', Helvetica, arial, sans-serif",
         h1: {
-            fontFamily: "'Space Mono'",
-            fontSize: '3.4375rem',
+            fontFamily: 'Quicksand',
             fontWeight: 700,
-            lineHeight: 1.21,
         },
         h2: {
-            fontFamily: "'Space Mono'",
-            fontSize: '3rem',
+            fontFamily: 'Quicksand',
             fontWeight: 700,
-            lineHeight: 1.21,
         },
         h3: {
-            fontFamily: "'Space Mono'",
-            fontSize: '2.125rem',
+            fontFamily: 'Quicksand',
             fontWeight: 700,
-            lineHeight: '3.5rem',
         },
         h4: {
-            fontFamily: "'Space Mono'",
-            fontSize: '1.5rem',
-            fontWeight: 700,
-            lineHeight: '3.5rem',
-        },
-        button: {
-            fontFamily: "'Space Mono'",
-            fontSize: '1rem',
-            lineHeight: 1.45,
+            fontFamily: 'Quicksand',
             fontWeight: 700,
         },
     },
     palette: {
-        mode: 'dark',
+        mode: 'light',
         primary: {
-            main: '#fff',
-            dark: '#DDDEDE',
-            light: '#fff',
-            contrastText: '#fff',
+            main: '#E46FA4',
         },
         secondary: {
-            main: '#181718',
-            light: '#292929',
-            contrastText: '#181718',
+            main: '#84A79D',
         },
         background: {
-            default: '#0B0B0B',
+            default: '#FFF',
         },
     },
     shape: {
-        borderRadius: 10,
+        borderRadius: 40,
     },
 });
 
@@ -77,16 +57,10 @@ theme.components = {
     MuiButton: {
         styleOverrides: {
             containedPrimary: {
-                color: theme.palette.common.black,
+                color: theme.palette.common.white,
             },
             containedSecondary: {
                 color: theme.palette.common.white,
-            },
-            sizeLarge: {
-                padding: theme.spacing(3, 7.25),
-            },
-            sizeMedium: {
-                padding: theme.spacing(14 / 8, 28 / 8),
             },
         },
     },
