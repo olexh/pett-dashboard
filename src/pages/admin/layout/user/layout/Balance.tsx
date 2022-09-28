@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../redux/Store';
 import { BalanceItem } from '../../../../../components';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;

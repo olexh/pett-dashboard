@@ -21,7 +21,7 @@ import { RootState } from '../../../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;

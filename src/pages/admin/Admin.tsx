@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Box, Container, Tab, Tabs } from '@mui/material';
 import { Funding, History, User, Users, Withdrawal, WithdrawalRequest } from './layout';
 import { Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
@@ -28,7 +28,12 @@ const Component: FC<Props> = ({ className }) => {
                             to="/admin/withdrawal"
                         />
                         <Tab label={t('funding')} value="/admin/funding" component={Link} to="/admin/funding" />
-                        <Tab label={t('withdrawalRequest')} value="/admin/request" component={Link} to="/admin/request" />
+                        <Tab
+                            label={t('withdrawalRequest')}
+                            value="/admin/request"
+                            component={Link}
+                            to="/admin/request"
+                        />
                     </Tabs>
                 </Box>
                 <Switch>

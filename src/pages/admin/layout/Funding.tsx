@@ -11,7 +11,7 @@ import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;

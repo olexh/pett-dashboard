@@ -134,7 +134,7 @@ const Navigation: FC<Props> = ({ className }) => {
                         <div className="mobile-menu-box">
                             <Container className="mobile">
                                 <ButtonBase style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img src={logo} className="mobile-logo" />
+                                    <img src={logo} className="mobile-logo" alt="logo" />
                                 </ButtonBase>
                                 <IconButton color="inherit" size="large" onClick={() => setIsDrawerOpened(true)}>
                                     <MenuIcon />

@@ -22,27 +22,19 @@ import { Navigation } from '../components';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { resetState } from '../redux/actions/app';
 import { useTranslation } from 'react-i18next';
+import { useProfile } from '../api';
 
 const App = ({ ...props }) => {
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const language = useSelector((state: RootState) => state.app.language);
     const token = useSelector((state: RootState) => state.app.secret);
+
     const {
         data: profileData,
         isError: isErrorProfile,
         refetch: refetchProfile,
-    } = useQuery(
-        ['profile', token],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/user/profile`, {
-                    headers: { auth: token },
-                })
-                .then((data) => data.data);
-        },
-        { retry: false },
-    );
+    } = useProfile({ auth: token }, { retry: false });
 
     const logout = () => {
         dispatch(resetState());
@@ -99,8 +91,8 @@ const App = ({ ...props }) => {
                                             </Grid>
                                             <Grid item md={12}>
                                                 <Typography align="center">
-                                                    To finish registration, please confirm your email. We've already
-                                                    sent a confirmation link to your email!
+                                                    To finish registration, please confirm your email. We&apos;ve
+                                                    already sent a confirmation link to your email!
                                                 </Typography>
                                             </Grid>
                                             <Grid item md={4} xs={6}>
