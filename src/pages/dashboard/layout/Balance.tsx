@@ -5,14 +5,16 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../../redux/Store';
-import { BalanceItem } from '../components';
+import { BalanceItem } from '../../../components';
 import { setInState } from '../../../redux/actions/app';
+import { useTranslation } from "react-i18next";
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const token = useSelector((state: RootState) => state.app.secret);
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
     const dispatch = useAppDispatch();
@@ -45,7 +47,7 @@ const Component: FC<Props> = ({ className }) => {
     return (
         <Paper className={className} variant="outlined" square sx={{ height: '100%' }}>
             <Typography variant="h5" margin={3}>
-                Balances
+                {t('balances')}
             </Typography>
             <Divider />
             {balances &&

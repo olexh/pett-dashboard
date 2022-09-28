@@ -8,12 +8,14 @@ import { RootState } from '../../../redux/Store';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const { userReference } = useParams<{ userReference?: string }>();
     const { enqueueSnackbar } = useSnackbar();
     const [isRefunded, setIsRefunded] = useState(false);
@@ -82,18 +84,18 @@ const Component: FC<Props> = ({ className }) => {
             <Grid item md={5} sm={5} xs={12}>
                 <Paper variant="outlined" square>
                     <Typography variant="h5" margin={3}>
-                        Withdrawal Request
+                        {t('withdrawalRequest')}
                     </Typography>
                     <Divider />
                     <Box padding={3}>
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                Withdrawal Reference *
+                                {t('withdrawalReference')}
                             </Typography>
                             <TextField
                                 value={reference}
                                 onChange={(e) => setReference(e.target.value)}
-                                placeholder="Type withdrawal reference"
+                                placeholder={t('typeWithdrawalReference')}
                                 fullWidth
                                 size="small"
                             />
@@ -101,13 +103,13 @@ const Component: FC<Props> = ({ className }) => {
                         <Box marginBottom={3}>
                             <FormControlLabel
                                 control={<Switch checked={isRefunded} onChange={handleChangeRefund} />}
-                                label="Refund withdrawal"
+                                label={t('refundWithdrawal')}
                             />
                         </Box>
                         {!isRefunded && (
                             <Box marginBottom={3}>
                                 <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                    Txid *
+                                    {t('txid')}
                                 </Typography>
                                 <TextField
                                     value={txid}
@@ -120,14 +122,14 @@ const Component: FC<Props> = ({ className }) => {
                         )}
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                Comment
+                                {t('comment')}
                             </Typography>
                             <TextField
                                 value={comment}
                                 multiline
                                 InputProps={{ style: { borderRadius: 20 } }}
                                 onChange={(e) => setComment(e.target.value)}
-                                placeholder="Type comment"
+                                placeholder={t('typeComment')}
                                 fullWidth
                                 minRows={4}
                                 size="small"
@@ -142,7 +144,7 @@ const Component: FC<Props> = ({ className }) => {
                             fullWidth
                             variant="contained"
                         >
-                            Confirm
+                            {t('confirm')}
                         </LoadingButton>
                     </Box>
                 </Paper>

@@ -24,6 +24,7 @@ import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import CheckIcon from '@mui/icons-material/Check';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
@@ -39,6 +40,7 @@ interface Response {
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
     const { data: withdrawal, isLoading: isLoadingWithdrawal } = useQuery<Response>(
@@ -54,7 +56,7 @@ const Component: FC<Props> = ({ className }) => {
     return (
         <Paper className={className} variant="outlined" square>
             <Typography variant="h5" margin={3}>
-                Withdrawal List
+                {t('withdrawalList')}
             </Typography>
             <Divider />
             {withdrawal && withdrawal.list.length > 0 && (

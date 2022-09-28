@@ -1,147 +1,92 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
-import { Button, Container, Dialog, DialogContent, Grid, TextField, Typography } from '@mui/material';
-import TelegramLoginButton, { TelegramUser } from '@v9v/ts-react-telegram-login';
+import { Button, Container, Grid, Typography } from '@mui/material';
 import cat from '../../assets/cat.png';
 import logo_transparent from '../../assets/logo_transparent.png';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { setInState } from '../../redux/actions/app';
-import { RootState, useAppDispatch } from '../../redux/Store';
+import LoginIcon from '@mui/icons-material/Login';
+import AddIcon from '@mui/icons-material/Add';
+import { LoginDialog, SignUpDialog } from './layout';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { RootState, useAppDispatch } from '../../redux/Store';
+import { setInState } from '../../redux/actions/app';
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
-    const history = useHistory();
     const dispatch = useAppDispatch();
-    const token = useSelector((state: RootState) => state.app.secret);
-    const [email, setEmail] = useState('');
-    const { mutate: getProfile, data: profileData } = useMutation(() => {
-        return axios
-            .get(`${axios.defaults.baseURL}/user/profile`, {
-                headers: { auth: token },
-            })
-            .then((data) => data.data);
-    });
-    const { mutate: loginUser, data: loginData } = useMutation((data: TelegramUser) => {
-        return axios.post(`${axios.defaults.baseURL}/auth/login`, data);
-    });
-    const { mutate: sendEmail, data: emailData } = useMutation((data: string) => {
-        return axios.post(`${axios.defaults.baseURL}/auth/email`, { email: data }, { headers: { auth: token } });
-    });
+    const { t } = useTranslation();
+    const language = useSelector((state: RootState) => state.app.language);
+    const [signUpOpen, setSignUpOpen] = useState(false);
+    const [loginOpen, setLoginOpen] = useState(false);
 
-    const handleTelegramResponse = (user: TelegramUser) => {
-        loginUser(user);
+    const openLogin = () => {
+        setSignUpOpen(false);
+        setLoginOpen(true);
     };
 
-    const handleEmailConfirm = () => {
-        if (email && email !== '') {
-            sendEmail(email);
-        }
+    const openSignUp = () => {
+        setSignUpOpen(true);
+        setLoginOpen(false);
     };
 
-    const handlePhoneConfirm = () => {
-        history.go(0);
+    const switchLang = () => {
+        if (language === 'en') {
+            dispatch(setInState({ language: 'ko' }));
+        } else {
+            dispatch(setInState({ language: 'en' }));
+        }
     };
-
-    useEffect(() => {
-        if (loginData) {
-            dispatch(setInState(loginData.data));
-        }
-    }, [loginData]);
-
-    useEffect(() => {
-        if (token) {
-            getProfile();
-        }
-    }, [token]);
 
     return (
         <div className={className}>
             <Container className="container">
                 <img src={logo_transparent} />
                 <Typography variant="h3" marginY={2} color="white" align="center">
-                    Pett Network Web Wallet
+                    {t('pettNetworkWebWallet')}
                 </Typography>
                 <Typography color="white" marginBottom={6} align="center">
-                    Sign up with Telegram
+                    {t('transactDigitalAssetsWithoutDownloadsAndInstallati')}
                 </Typography>
-                <TelegramLoginButton requestAccess dataOnAuth={handleTelegramResponse} botName="pett_buy_bot" />
+                <Grid container maxWidth={300} spacing={2}>
+                    <Grid item md={12} xs={12}>
+                        <Button
+                            size="large"
+                            disableElevation
+                            fullWidth
+                            variant="contained"
+                            color="info"
+                            startIcon={<LoginIcon />}
+                            onClick={openLogin}
+                        >
+                            {t('logIn')}
+                        </Button>
+                    </Grid>
+                    <Grid item md={12} xs={12}>
+                        <Button
+                            size="large"
+                            disableElevation
+                            fullWidth
+                            variant="contained"
+                            color="error"
+                            startIcon={<AddIcon />}
+                            onClick={openSignUp}
+                        >
+                            {t('signUp')}
+                        </Button>
+                    </Grid>
+                    <Grid item md={12} xs={12}>
+                        <Button size="large" disableElevation color="inherit" onClick={switchLang}>
+                            {language === 'en' ? '🇰🇷 KR' : '🇬🇧 EN'}
+                        </Button>
+                    </Grid>
+                </Grid>
             </Container>
             <div className="back" />
-            <Dialog maxWidth="sm" fullWidth open={Boolean(profileData) && !profileData!.email_activated}>
-                <DialogContent>
-                    {!emailData && Boolean(profileData) && !profileData!.email ? (
-                        <Grid container direction="column" spacing={2} textAlign="center">
-                            <Grid item md={12}>
-                                <Typography variant="h4">Email Confirmation</Typography>
-                            </Grid>
-                            <Grid item md={12}>
-                                <Typography align="center">Please, type your email to confirm your account.</Typography>
-                            </Grid>
-                            <Grid item md={12}>
-                                <TextField
-                                    fullWidth
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Write your email"
-                                    label="Email"
-                                />
-                            </Grid>
-                            <Grid item md={12}>
-                                <Button
-                                    variant="contained"
-                                    onClick={handleEmailConfirm}
-                                    disableElevation
-                                    color="secondary"
-                                >
-                                    Confirm
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    ) : (
-                        <Grid container direction="column" spacing={2} textAlign="center">
-                            <Grid item md={12}>
-                                <Typography variant="h4">Congratulations!</Typography>
-                            </Grid>
-                            <Grid item md={12}>
-                                <Typography align="center">
-                                    We've just sent an confirmation link to your email. Please, confirm it to continue
-                                    registration.
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    )}
-                </DialogContent>
-            </Dialog>
-            <Dialog
-                maxWidth="sm"
-                fullWidth
-                open={Boolean(profileData) && profileData!.email_activated && !profileData!.telegram_activated}
-            >
-                <DialogContent>
-                    <Grid container direction="column" spacing={2} textAlign="center">
-                        <Grid item md={12}>
-                            <Typography variant="h4">Phone Confirmation</Typography>
-                        </Grid>
-                        <Grid item md={12}>
-                            <Typography align="center">
-                                Almost done! Please, share your contact to our telegram bot to finish the registration.
-                            </Typography>
-                        </Grid>
-                        <Grid item md={12}>
-                            <Button variant="contained" onClick={handlePhoneConfirm} disableElevation color="secondary">
-                                Done
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-            </Dialog>
+            <LoginDialog open={loginOpen} setOpen={setLoginOpen} signUpOpen={openSignUp} />
+            <SignUpDialog open={signUpOpen} setOpen={setSignUpOpen} loginOpen={openLogin} />
         </div>
     );
 };
@@ -156,6 +101,8 @@ export default styled(Component)`
         flex-direction: column;
         align-items: center;
         position: relative;
+        text-align: center;
+        color: white;
     }
 
     .back {

@@ -2,9 +2,11 @@ import React, { FC } from 'react';
 import { Container, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
-import { resetState } from '../redux/actions/app';
-import { useAppDispatch } from '../redux/Store';
+import { resetState, setInState } from '../redux/actions/app';
+import { RootState, useAppDispatch } from '../redux/Store';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 interface Props {
     className?: string;
@@ -14,8 +16,10 @@ interface Props {
 }
 
 const MobileDrawer: FC<Props> = ({ className, isDrawerOpened, isAdmin, setIsDrawerOpened }) => {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const history = useHistory();
+    const language = useSelector((state: RootState) => state.app.language);
     const onClose = () => setIsDrawerOpened(false);
 
     const logout = () => {
@@ -26,6 +30,16 @@ const MobileDrawer: FC<Props> = ({ className, isDrawerOpened, isAdmin, setIsDraw
     const goTo = (path: string) => {
         onClose();
         history.push(path);
+    };
+
+    const switchLang = () => {
+        if (language === 'en') {
+            dispatch(setInState({ language: 'ko' }));
+        } else {
+            dispatch(setInState({ language: 'en' }));
+        }
+
+        onClose();
     };
 
     return (
@@ -58,11 +72,22 @@ const MobileDrawer: FC<Props> = ({ className, isDrawerOpened, isAdmin, setIsDraw
                     </ListItem>
                 )}
                 <ListItem className="link">
+                    <ListItemButton className="link-text" onClick={switchLang}>
+                        <ListItemText
+                            primary={
+                                <Typography variant="h6" textTransform="uppercase">
+                                    {language === 'en' ? 'KR' : 'EN'}
+                                </Typography>
+                            }
+                        />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem className="link">
                     <ListItemButton className="link-text" onClick={logout}>
                         <ListItemText
                             primary={
                                 <Typography variant="h6" textTransform="uppercase">
-                                    Log out
+                                    {t('logOut')}
                                 </Typography>
                             }
                         />

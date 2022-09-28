@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from "react-i18next";
 
 interface Props {
     className?: string;
@@ -35,6 +36,7 @@ interface Response {
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
     const { data: history, isLoading: isLoadingHistory } = useQuery<Response>(
@@ -50,7 +52,7 @@ const Component: FC<Props> = ({ className }) => {
     return (
         <Paper className={className} variant="outlined" square>
             <Typography variant="h5" margin={3}>
-                History
+                {t('history')}
             </Typography>
             <Divider />
             {history && history.list.length > 0 && (

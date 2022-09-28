@@ -1,5 +1,5 @@
 import Users from './Users';
-import User from './User';
+import User from './user/User';
 import History from './History';
 import Funding from './Funding';
 import Withdrawal from './Withdrawal';

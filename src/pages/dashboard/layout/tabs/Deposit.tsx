@@ -7,12 +7,14 @@ import { RootState } from '../../../../redux/Store';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
     return (
@@ -22,7 +24,7 @@ const Component: FC<Props> = ({ className }) => {
             </Grid>
             <Grid item md={12} sm={12} xs={12}>
                 <Typography variant="subtitle2" color="textSecondary">
-                    Deposit Address
+                    {t('depositAddress')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
                     {selectedBalance.address}{' '}
@@ -35,15 +37,15 @@ const Component: FC<Props> = ({ className }) => {
             </Grid>
             <Grid item md={6} sm={6} xs={6}>
                 <Typography variant="subtitle2" color="textSecondary">
-                    Expected arrival
+                    {t('expectedArrival')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
-                    {selectedBalance.coin.confirmations} network confirmations
+                    {t('networkConfirmations', { confirmations: selectedBalance.coin.confirmations })}
                 </Typography>
             </Grid>
             <Grid item md={6} sm={6} xs={6}>
                 <Typography variant="subtitle2" color="textSecondary">
-                    Minimum deposit
+                    {t('minimumDeposit')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
                     <NumericFormat
@@ -58,10 +60,10 @@ const Component: FC<Props> = ({ className }) => {
             </Grid>
             <Grid item md={12} sm={12} xs={12}>
                 <Typography variant="body2">
-                    · Send only {selectedBalance.coin.ticker} to this deposit Address.
+                    {t('sendOnlyToThisDepositAddress', { ticker: selectedBalance.coin.ticker })}
                 </Typography>
                 <Typography variant="body2">
-                    · Ensure the network is{' '}
+                    {t('ensureTheNetworkIs')}
                     <Typography variant="body2" component="span" color="primary">
                         {selectedBalance.coin.network}
                     </Typography>

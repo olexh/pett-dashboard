@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Avatar, Box, ButtonBase, ButtonBaseProps, Grid, Typography } from '@mui/material';
 import { NumericFormat } from 'react-number-format';
+import LockIcon from '@mui/icons-material/Lock';
 
 interface Props extends PettDashboard.Balance, ButtonBaseProps {
     className?: string;
@@ -35,13 +36,16 @@ const Component: FC<Props> = ({ className, selected, coin, available, frozen, ..
                             />{' '}
                             <Typography component="span" color="textSecondary" fontWeight={700}>
                                 /{' '}
-                                <NumericFormat
-                                    value={frozen}
-                                    decimalScale={2}
-                                    fixedDecimalScale
-                                    thousandSeparator
-                                    displayType="text"
-                                />
+                                <Box display="inline-flex" alignItems="flex-start">
+                                    <NumericFormat
+                                        value={frozen}
+                                        decimalScale={2}
+                                        fixedDecimalScale
+                                        thousandSeparator
+                                        displayType="text"
+                                    />
+                                    <LockIcon fontSize="small" />
+                                </Box>
                             </Typography>
                         </Typography>
                     </Grid>

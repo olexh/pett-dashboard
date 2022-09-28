@@ -17,11 +17,12 @@ import logo from '../assets/logo.svg';
 import MenuIcon from '@mui/icons-material/Menu';
 import MobileDrawer from './MobileDrawer';
 import { RootState, useAppDispatch } from '../redux/Store';
-import { resetState } from '../redux/actions/app';
+import { resetState, setInState } from '../redux/actions/app';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
@@ -49,7 +50,9 @@ const ElevationScroll = ({ ...props }) => {
 };
 
 const Navigation: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const language = useSelector((state: RootState) => state.app.language);
     const [isDrawerOpened, setIsDrawerOpened] = useState(false);
     const mobile = useMediaQuery(({ breakpoints }: Theme) => breakpoints.down('sm'));
     const token = useSelector((state: RootState) => state.app.secret);
@@ -67,15 +70,23 @@ const Navigation: FC<Props> = ({ className }) => {
 
     const logoPETT = (
         <div className="logo-pett">
-            <img src={logo} alt="Logo" width={39} height={39} />
+            <img src={logo} alt={t('logo')} width={39} height={39} />
             <Typography variant="h6" display="inline" paddingLeft={1} fontWeight={400}>
-                Pett Network
+                {t('pettNetwork')}
             </Typography>
         </div>
     );
 
     const logout = () => {
         dispatch(resetState());
+    };
+
+    const switchLang = () => {
+        if (language === 'en') {
+            dispatch(setInState({ language: 'ko' }));
+        } else {
+            dispatch(setInState({ language: 'en' }));
+        }
     };
 
     return (
@@ -94,6 +105,9 @@ const Navigation: FC<Props> = ({ className }) => {
                                     <ButtonBase component={RouterLink} to="/" className="logo-btn">
                                         {logoPETT}
                                     </ButtonBase>
+                                </Grid>
+                                <Grid item md="auto">
+                                    <Button onClick={switchLang}>{language === 'en' ? 'KR' : 'EN'}</Button>
                                 </Grid>
                                 {profileData && profileData!.admin && (
                                     <Grid item md="auto" textAlign="right">

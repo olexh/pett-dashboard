@@ -17,9 +17,10 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/Store';
+import { RootState } from '../../../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -37,16 +38,20 @@ interface Response {
 
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
+    const { usernameParam } = useParams<{ usernameParam: string }>();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
     const { data: history, isLoading: isLoadingHistory } = useQuery<Response>(
-        ['adminHistory', token, page],
+        ['userHistoryAdmin', token, page],
         () => {
             return axios
-                .get(`${axios.defaults.baseURL}/admin/history`, { headers: { auth: token }, params: { page } })
+                .get(`${axios.defaults.baseURL}/admin/user/${usernameParam}/history`, {
+                    headers: { auth: token },
+                    params: { page },
+                })
                 .then((data) => data.data);
         },
-        { refetchInterval: 10000 },
+        { cacheTime: 0 },
     );
 
     return (
@@ -69,7 +74,7 @@ const Component: FC<Props> = ({ className }) => {
                         </TableHead>
                         <TableBody>
                             {history.list.map((h: PettDashboard.History) => (
-                                <TableRow hover key={h.created}>
+                                <TableRow hover key={h.txid}>
                                     <TableCell component="th" scope="row">
                                         {h.category.charAt(0).toUpperCase() + h.category.slice(1)}
                                     </TableCell>

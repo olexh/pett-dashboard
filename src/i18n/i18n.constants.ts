@@ -4,4 +4,5 @@ export const namespaces = {
 
 export const languages = {
     en: 'en',
+    ko: 'ko',
 };

@@ -15,7 +15,7 @@ const Component: FC<Props> = ({ className }) => {
     const { data, isError } = useQuery(
         ['emailConfirmation', token],
         () => {
-            return axios.post(`${axios.defaults.baseURL}/auth/email/confirm`, { token });
+            return axios.post(`${axios.defaults.baseURL}/auth/activate`, { token });
         },
         { retry: false },
     );

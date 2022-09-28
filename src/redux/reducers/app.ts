@@ -7,6 +7,7 @@ interface ReducerState {
     reference?: string;
     secret?: string;
     selectedBalance?: PettDashboard.Balance;
+    language: 'en' | 'ko';
 }
 
 const initialState: ReducerState = {
@@ -15,6 +16,7 @@ const initialState: ReducerState = {
     reference: undefined,
     secret: undefined,
     selectedBalance: undefined,
+    language: 'en',
 };
 
 const reducer = (state: ReducerState = initialState, action: AnyAction) => {
@@ -22,7 +24,7 @@ const reducer = (state: ReducerState = initialState, action: AnyAction) => {
         case SET_IN_STATE:
             return { ...state, ...action.payload };
         case RESET_STATE:
-            return initialState;
+            return { ...initialState, language: state.language };
         default: {
             return state;
         }

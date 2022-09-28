@@ -37,8 +37,8 @@ declare namespace PettDashboard {
 
     type User = {
         phone_number: number;
-        telegram_activated: boolean;
-        email: number;
+        username: string;
+        email: string;
         email_activated: boolean;
         last_active: number;
         created: number;

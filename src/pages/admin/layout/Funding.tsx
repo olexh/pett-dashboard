@@ -11,16 +11,18 @@ import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from "react-i18next";
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
-    const { userReference } = useParams<{ userReference?: string }>();
+    const { t } = useTranslation();
+    const { usernameParam } = useParams<{ usernameParam?: string }>();
     const { enqueueSnackbar } = useSnackbar();
     const [ticker, setTicker] = useState('');
-    const [reference, setReference] = useState(userReference ? userReference : '');
+    const [username, setUsername] = useState(usernameParam ? usernameParam : '');
     const [amount, setAmount] = useState('');
     const [timelock, setTimelock] = useState<Moment | null>(null);
     const token = useSelector((state: RootState) => state.app.secret);
@@ -30,7 +32,7 @@ const Component: FC<Props> = ({ className }) => {
         data: fundingData,
         error: fundingError,
         isError: isErrorFunding,
-    } = useMutation((req: { amount: number; reference: string; ticker: string; timelock?: number }) => {
+    } = useMutation((req: { amount: number; username: string; ticker: string; timelock?: number }) => {
         return axios
             .post(`${axios.defaults.baseURL}/admin/funding`, req, { headers: { auth: token } })
             .then((data) => data.data);
@@ -51,14 +53,14 @@ const Component: FC<Props> = ({ className }) => {
             return;
         }
 
-        if (!reference || reference === '') {
+        if (!username || username === '') {
             enqueueSnackbar('Reference field is required for funding', { variant: 'error' });
             return;
         }
 
         funding({
             amount: parseFloat(amount),
-            reference,
+            username,
             ticker,
             timelock: timelock ? parseInt(moment(timelock).format('X')) : undefined,
         });
@@ -70,7 +72,7 @@ const Component: FC<Props> = ({ className }) => {
             setTicker('');
             setAmount('');
             setTimelock(null);
-            setReference('');
+            setUsername('');
         }
     }, [fundingData]);
 
@@ -80,7 +82,7 @@ const Component: FC<Props> = ({ className }) => {
             setTicker('');
             setAmount('');
             setTimelock(null);
-            setReference('');
+            setUsername('');
         }
     }, [fundingError]);
 
@@ -89,46 +91,46 @@ const Component: FC<Props> = ({ className }) => {
             <Grid item md={5} sm={5} xs={12}>
                 <Paper variant="outlined" square>
                     <Typography variant="h5" margin={3}>
-                        Funding
+                        {t('funding')}
                     </Typography>
                     <Divider />
                     <Box padding={3}>
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                User Reference *
+                                {t('username')}
                             </Typography>
                             <TextField
-                                value={reference}
-                                onChange={(e) => setReference(e.target.value)}
-                                placeholder="Type user reference"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder={t('typeUsername')}
                                 fullWidth
                                 size="small"
                             />
                         </Box>
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                Amount *
+                                {t('amount')}
                             </Typography>
                             <NumericFormat
                                 value={amount}
                                 customInput={TextField}
                                 onChange={(e) => setAmount(e.target.value)}
-                                placeholder="Type amount"
+                                placeholder={t('typeAmount')}
                                 fullWidth
                                 size="small"
                             />
                         </Box>
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                Coin *
+                                {t('coin')}
                             </Typography>
                             <Select size="small" fullWidth value={ticker} onChange={handleChangeTicker}>
-                                <MenuItem value="PETT">PETT</MenuItem>
+                                <MenuItem value="PETT">{t('pett')}</MenuItem>
                             </Select>
                         </Box>
                         <Box marginBottom={3}>
                             <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                                Timelock
+                                {t('timelock')}
                             </Typography>
                             <DateTimePicker
                                 value={timelock}
@@ -145,7 +147,7 @@ const Component: FC<Props> = ({ className }) => {
                             fullWidth
                             variant="contained"
                         >
-                            Fund
+                            {t('fund')}
                         </LoadingButton>
                     </Box>
                 </Paper>

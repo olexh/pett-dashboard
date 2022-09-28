@@ -8,12 +8,14 @@ import axios from 'axios';
 import { NumericFormat } from 'react-number-format';
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
     const token = useSelector((state: RootState) => state.app.secret);
     const [address, setAddress] = useState('');
@@ -64,25 +66,25 @@ const Component: FC<Props> = ({ className }) => {
         <div className={className}>
             <Box marginBottom={3}>
                 <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                    Amount
+                    {t('amount2')}
                 </Typography>
                 <NumericFormat
                     value={amount}
                     customInput={TextField}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="Type your amount"
+                    placeholder={t('typeYourAmount')}
                     fullWidth
                     size="small"
                 />
             </Box>
             <Box marginBottom={3}>
                 <Typography variant="subtitle2" marginBottom={1} color="textSecondary">
-                    Address
+                    {t('address')}
                 </Typography>
                 <TextField
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Type your withdrawal address"
+                    placeholder={t('typeYourWithdrawalAddress')}
                     fullWidth
                     size="small"
                 />
@@ -97,21 +99,21 @@ const Component: FC<Props> = ({ className }) => {
                     fullWidth
                     variant="contained"
                 >
-                    Withdraw
+                    {t('withdraw')}
                 </LoadingButton>
             </Box>
             <Grid container spacing={4}>
                 <Grid item md={6} sm={6} xs={6}>
                     <Typography variant="subtitle2" color="textSecondary">
-                        Expected arrival
+                        {t('expectedArrival')}
                     </Typography>
                     <Typography variant="body2" fontWeight={700}>
-                        {selectedBalance.coin.confirmations} network confirmations
+                        {t('networkConfirmations', { confirmations: selectedBalance.coin.confirmations })}
                     </Typography>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
                     <Typography variant="subtitle2" color="textSecondary">
-                        Minimum withdraw
+                        {t('minimumWithdraw')}
                     </Typography>
                     <Typography variant="body2" fontWeight={700}>
                         <NumericFormat
