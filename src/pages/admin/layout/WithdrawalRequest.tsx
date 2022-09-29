@@ -2,13 +2,13 @@ import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Box, Divider, FormControlLabel, Grid, Paper, Switch, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { withdrawalRequest } from '../../../api';
 
 interface Props {
     className?: string;
@@ -24,21 +24,17 @@ const Component: FC<Props> = ({ className }) => {
     const [txid, setTxid] = useState('');
     const token = useSelector((state: RootState) => state.app.secret);
 
-    // TODO: post method
+    // TODO: test
     const {
         mutate: request,
         isLoading: isLoadingRequest,
         data: requestData,
         error: requestError,
         isError: isErrorRequest,
-    } = useMutation((req: { txid?: string; reference: string; comment?: string }) => {
-        return axios
-            .post(
-                `${axios.defaults.baseURL}/admin/withdrawal/${req.reference}/${isRefunded ? 'refund' : 'process'}`,
-                req,
-                { headers: { auth: token } },
-            )
-            .then((data) => data.data);
+    } = useMutation(withdrawalRequest, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleRequest = () => {
@@ -53,9 +49,13 @@ const Component: FC<Props> = ({ className }) => {
         }
 
         request({
-            txid,
-            reference,
-            comment,
+            auth: token,
+            isRefunded,
+            req: {
+                txid,
+                reference,
+                comment,
+            },
         });
     };
 

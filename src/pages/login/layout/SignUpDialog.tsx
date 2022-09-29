@@ -20,7 +20,6 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
-    // TODO: post method
     const {
         mutate: signUpUser,
         isLoading: isLoadingSignUp,

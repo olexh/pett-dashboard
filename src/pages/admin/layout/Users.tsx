@@ -23,7 +23,6 @@ import {
     Typography,
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import moment from 'moment';
@@ -35,7 +34,7 @@ import { useSnackbar } from 'notistack';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import { Trans, useTranslation } from 'react-i18next';
-import { useUsersList } from '../../../api';
+import { admin as makeAdmin, ban, useUsersList } from '../../../api';
 
 interface Props {
     className?: string;
@@ -57,38 +56,30 @@ const Component: FC<Props> = ({ className }) => {
         { refetchInterval: 10000 },
     );
 
-    // TODO: post methods
     const {
         mutate: banhammer,
         isLoading: isLoadingBanhammer,
         isSuccess: isSuccessBanhammer,
         isError: isErrorBanhammer,
-    } = useMutation((req: { user: PettDashboard.User; type: 'ban' | 'unban' }) => {
-        return axios
-            .post(
-                `${axios.defaults.baseURL}/admin/user/${req.user.username}/${req.type}`,
-                {},
-                { headers: { auth: token } },
-            )
-            .then((data) => data.data);
+    } = useMutation(ban, {
+        onError: (e) => {
+            alert(e);
+        },
     });
+
     const {
         mutate: admin,
         isLoading: isLoadingAdmin,
         isSuccess: isSuccessAdmin,
         isError: isErrorAdmin,
-    } = useMutation((req: { user: PettDashboard.User; type: 'admin' | 'unadmin' }) => {
-        return axios
-            .post(
-                `${axios.defaults.baseURL}/admin/user/${req.user.username}/${req.type}`,
-                {},
-                { headers: { auth: token } },
-            )
-            .then((data) => data.data);
+    } = useMutation(makeAdmin, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleBanhammer = (user: PettDashboard.User, type: 'ban' | 'unban') => {
-        banhammer({ user, type });
+        banhammer({ auth: token, user, type });
         setOpenBanhammerAlert(false);
     };
 
@@ -103,7 +94,7 @@ const Component: FC<Props> = ({ className }) => {
     };
 
     const handleAdmin = (user: PettDashboard.User, type: 'admin' | 'unadmin') => {
-        admin({ user, type });
+        admin({ auth: token, user, type });
     };
 
     const handleOrderBy = (property: string) => {

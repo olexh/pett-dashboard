@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Box, Divider, Grid, MenuItem, Paper, Select, SelectChangeEvent, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -12,6 +11,7 @@ import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
+import { funding as makeFunding } from '../../../api';
 
 interface Props {
     className?: string;
@@ -27,17 +27,17 @@ const Component: FC<Props> = ({ className }) => {
     const [timelock, setTimelock] = useState<Moment | null>(null);
     const token = useSelector((state: RootState) => state.app.secret);
 
-    // TODO: post method
+    //todo: test
     const {
         mutate: funding,
         isLoading: isLoadingFunding,
         data: fundingData,
         error: fundingError,
         isError: isErrorFunding,
-    } = useMutation((req: { amount: number; username: string; ticker: string; timelock?: number }) => {
-        return axios
-            .post(`${axios.defaults.baseURL}/admin/funding`, req, { headers: { auth: token } })
-            .then((data) => data.data);
+    } = useMutation(makeFunding, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleChangeTicker = (event: SelectChangeEvent) => {
@@ -61,10 +61,13 @@ const Component: FC<Props> = ({ className }) => {
         }
 
         funding({
-            amount: parseFloat(amount),
-            username,
-            ticker,
-            timelock: timelock ? parseInt(moment(timelock).format('X')) : undefined,
+            auth: token,
+            req: {
+                amount: parseFloat(amount),
+                username,
+                ticker,
+                timelock: timelock ? parseInt(moment(timelock).format('X')) : undefined,
+            },
         });
     };
 
