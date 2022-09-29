@@ -14,26 +14,16 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useUserHistory } from '../../../../../api';
 
 interface Props {
     className?: string;
-}
-
-interface Response {
-    pagination: {
-        pages: number;
-        total: number;
-        current: number;
-    };
-    list: PettDashboard.History[];
 }
 
 const Component: FC<Props> = ({ className }) => {
@@ -41,16 +31,9 @@ const Component: FC<Props> = ({ className }) => {
     const { usernameParam } = useParams<{ usernameParam: string }>();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: history, isLoading: isLoadingHistory } = useQuery<Response>(
-        ['userHistoryAdmin', token, page],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/admin/user/${usernameParam}/history`, {
-                    headers: { auth: token },
-                    params: { page },
-                })
-                .then((data) => data.data);
-        },
+
+    const { data: history, isLoading: isLoadingHistory } = useUserHistory(
+        { auth: token, username: usernameParam, page: page },
         { cacheTime: 0 },
     );
 

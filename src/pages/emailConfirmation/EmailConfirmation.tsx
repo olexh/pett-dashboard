@@ -12,6 +12,8 @@ interface Props {
 const Component: FC<Props> = ({ className }) => {
     const { token } = useParams<{ token?: string }>();
     const history = useHistory();
+
+    // TODO: post method
     const { data, isError } = useQuery(
         ['emailConfirmation', token],
         () => {

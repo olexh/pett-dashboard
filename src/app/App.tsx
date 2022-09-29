@@ -13,10 +13,8 @@ import { CgArrowLongUp } from 'react-icons/cg';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 import 'swiper/css';
-import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../redux/Store';
-import axios from 'axios';
 import { SnackbarProvider } from 'notistack';
 import { Navigation } from '../components';
 import { LocalizationProvider } from '@mui/x-date-pickers';

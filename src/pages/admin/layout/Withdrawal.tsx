@@ -16,8 +16,6 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import moment from 'moment';
@@ -25,31 +23,19 @@ import { NumericFormat } from 'react-number-format';
 import CheckIcon from '@mui/icons-material/Check';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAdminWithdrawalList } from '../../../api';
 
 interface Props {
     className?: string;
-}
-
-interface Response {
-    pagination: {
-        pages: number;
-        total: number;
-        current: number;
-    };
-    list: PettDashboard.Withdrawal[];
 }
 
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: withdrawal, isLoading: isLoadingWithdrawal } = useQuery<Response>(
-        ['adminWithdrawal', token, page],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/admin/withdrawal/list`, { headers: { auth: token }, params: { page } })
-                .then((data) => data.data);
-        },
+
+    const { data: withdrawal, isLoading: isLoadingWithdrawal } = useAdminWithdrawalList(
+        { auth: token, page },
         { refetchInterval: 10000 },
     );
 

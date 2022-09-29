@@ -22,6 +22,7 @@ const Component: FC<Props> = ({ className }) => {
     const [amount, setAmount] = useState('');
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
+    // TODO: post method
     const {
         mutate: withdraw,
         isLoading: isLoadingWithdraw,

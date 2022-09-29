@@ -26,6 +26,8 @@ const Component: FC<Props> = ({ className }) => {
     const [amount, setAmount] = useState('');
     const [timelock, setTimelock] = useState<Moment | null>(null);
     const token = useSelector((state: RootState) => state.app.secret);
+
+    // TODO: post method
     const {
         mutate: funding,
         isLoading: isLoadingFunding,

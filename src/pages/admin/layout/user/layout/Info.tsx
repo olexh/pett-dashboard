@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../redux/Store';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { useUserInfo } from '../../../../../api';
 
 interface Props {
     className?: string;
@@ -17,15 +16,8 @@ const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const { usernameParam } = useParams<{ usernameParam: string }>();
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: info } = useQuery<PettDashboard.User>(
-        ['userInfoAdmin'],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/admin/user/${usernameParam}`, { headers: { auth: token } })
-                .then((data) => data.data);
-        },
-        { cacheTime: 0 },
-    );
+
+    const { data: info } = useUserInfo({ auth: token, username: usernameParam }, { cacheTime: 0 });
 
     return (
         <Paper className={className} variant="outlined" square>

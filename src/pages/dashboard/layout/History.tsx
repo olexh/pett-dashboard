@@ -14,38 +14,24 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
+import { useHistory } from '../../../api';
 
 interface Props {
     className?: string;
-}
-
-interface Response {
-    pagination: {
-        pages: number;
-        total: number;
-        current: number;
-    };
-    list: PettDashboard.History[];
 }
 
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: history, isLoading: isLoadingHistory } = useQuery<Response>(
-        ['history', token, page],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/user/history`, { headers: { auth: token }, params: { page } })
-                .then((data) => data.data);
-        },
+
+    const { data: history, isLoading: isLoadingHistory } = useHistory(
+        { auth: token, page },
         { refetchInterval: 10000 },
     );
 

@@ -4,28 +4,15 @@ import { Grid, IconButton, Link, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useBank } from '../../../../api';
 
 interface Props {
     className?: string;
 }
 
-interface Response {
-    depositor: string;
-    account: string;
-    bank: string;
-}
-
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
-    const { data: bank } = useQuery<Response>(
-        ['bank'],
-        () => {
-            return axios.get(`${axios.defaults.baseURL}/system/bank`).then((data) => data.data);
-        },
-        { refetchInterval: 10000 },
-    );
+    const { data: bank } = useBank({ refetchInterval: 10000 });
 
     if (!bank) return null;
 

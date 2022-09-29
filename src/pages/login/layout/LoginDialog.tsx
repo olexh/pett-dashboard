@@ -6,7 +6,7 @@ import axios from 'axios';
 import { LoadingButton } from '@mui/lab';
 import { setInState } from '../../../redux/actions/app';
 import { useAppDispatch } from '../../../redux/Store';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     className?: string;
@@ -21,6 +21,7 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // TODO: post method
     const {
         mutate: loginUser,
         isLoading: isLoadingLogin,

@@ -20,6 +20,8 @@ const Component: FC<Props> = ({ className }) => {
     const dispatch = useAppDispatch();
     const token = useSelector((state: RootState) => state.app.secret);
     const [email, setEmail] = useState('');
+
+    // TODO: post methods
     const { mutate: getProfile, data: profileData } = useMutation(() => {
         return axios
             .get(`${axios.defaults.baseURL}/user/profile`, {

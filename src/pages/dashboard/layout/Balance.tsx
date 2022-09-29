@@ -1,13 +1,12 @@
 import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { Divider, Paper, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../../redux/Store';
 import { BalanceItem } from '../../../components';
 import { setInState } from '../../../redux/actions/app';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
+import { useBalance } from '../../../api';
 
 interface Props {
     className?: string;
@@ -18,15 +17,8 @@ const Component: FC<Props> = ({ className }) => {
     const token = useSelector((state: RootState) => state.app.secret);
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
     const dispatch = useAppDispatch();
-    const { data: balances } = useQuery<PettDashboard.Balance[]>(
-        ['balances'],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/user/balances`, { headers: { auth: token } })
-                .then((data) => data.data);
-        },
-        { refetchInterval: 10000 },
-    );
+
+    const { data: balances } = useBalance({ auth: token }, { refetchInterval: 10000 });
 
     const handleSelectBalance = (balance: PettDashboard.Balance) => {
         dispatch(setInState({ selectedBalance: balance }));

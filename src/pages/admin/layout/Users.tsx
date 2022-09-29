@@ -22,7 +22,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
@@ -35,18 +35,10 @@ import { useSnackbar } from 'notistack';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import { Trans, useTranslation } from 'react-i18next';
+import { useUsersList } from '../../../api';
 
 interface Props {
     className?: string;
-}
-
-interface Response {
-    pagination: {
-        pages: number;
-        total: number;
-        current: number;
-    };
-    list: PettDashboard.User[];
 }
 
 const Component: FC<Props> = ({ className }) => {
@@ -59,18 +51,13 @@ const Component: FC<Props> = ({ className }) => {
     const [openBanhammerAlert, setOpenBanhammerAlert] = useState(false);
     const [selectedUser, setSelectedUser] = useState<PettDashboard.User>();
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: users, isLoading: isLoadingUsers } = useQuery<Response>(
-        ['users', token, page, search, sort, orderBy],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/admin/user/list`, {
-                    headers: { auth: token },
-                    params: { page, search, order: orderBy, sort },
-                })
-                .then((data) => data.data);
-        },
+
+    const { data: users, isLoading: isLoadingUsers } = useUsersList(
+        { auth: token, page, search, order: orderBy, sort },
         { refetchInterval: 10000 },
     );
+
+    // TODO: post methods
     const {
         mutate: banhammer,
         isLoading: isLoadingBanhammer,

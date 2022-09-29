@@ -23,6 +23,8 @@ const Component: FC<Props> = ({ className }) => {
     const [reference, setReference] = useState(userReference ? userReference : '');
     const [txid, setTxid] = useState('');
     const token = useSelector((state: RootState) => state.app.secret);
+
+    // TODO: post method
     const {
         mutate: request,
         isLoading: isLoadingRequest,
