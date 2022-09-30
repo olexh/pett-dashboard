@@ -2,9 +2,9 @@ import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Dialog, DialogContent, Grid, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { LoadingButton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
+import { signUp } from '../../../api';
 
 interface Props {
     className?: string;
@@ -25,8 +25,10 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
         isLoading: isLoadingSignUp,
         isSuccess: isSuccessSignUp,
         data: signUpData,
-    } = useMutation((data: { email: string; username: string; password: string; phone_number: string }) => {
-        return axios.post(`${axios.defaults.baseURL}/auth/join`, data);
+    } = useMutation(signUp, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleSignUp = () => {
@@ -46,7 +48,7 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
             return;
         }
 
-        signUpUser({ email, username, phone_number: phone, password });
+        signUpUser({ data: { email, username, phone_number: phone, password } });
     };
 
     useEffect(() => {

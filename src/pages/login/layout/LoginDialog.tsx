@@ -2,11 +2,11 @@ import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Dialog, DialogContent, Grid, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { LoadingButton } from '@mui/lab';
 import { setInState } from '../../../redux/actions/app';
 import { useAppDispatch } from '../../../redux/Store';
 import { useTranslation } from 'react-i18next';
+import { login } from '../../../api';
 
 interface Props {
     className?: string;
@@ -21,14 +21,15 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // TODO: post method
     const {
         mutate: loginUser,
         isLoading: isLoadingLogin,
         isSuccess: isSuccessLogin,
         data: loginData,
-    } = useMutation((req: { email: string; password: string }) => {
-        return axios.post(`${axios.defaults.baseURL}/auth/login`, req).then((data) => data.data);
+    } = useMutation(login, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleLogin = () => {
@@ -40,7 +41,7 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
             return;
         }
 
-        loginUser({ email, password });
+        loginUser({ data: { email, password } });
     };
 
     useEffect(() => {

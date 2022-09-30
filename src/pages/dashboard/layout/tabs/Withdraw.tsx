@@ -29,7 +29,11 @@ const Component: FC<Props> = ({ className }) => {
         data: withdrawData,
         error: withdrawError,
         isError: isErrorWithdraw,
-    } = useMutation(makeWithdraw);
+    } = useMutation(makeWithdraw, {
+        onError: (e) => {
+            alert(e);
+        },
+    });
 
     const handleWithdraw = () => {
         if (!address || address === '') {

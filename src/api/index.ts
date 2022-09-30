@@ -15,6 +15,8 @@ import admin from './admin';
 import funding from './funding';
 import withdrawalRequest from './withdrawalRequest';
 import withdraw from './withdraw';
+import signUp from './signUp';
+import login from './login';
 
 import useEmailConfirmation from './useEmailConfirmation';
 
@@ -34,5 +36,7 @@ export {
     funding,
     withdrawalRequest,
     withdraw,
+    signUp,
     useEmailConfirmation,
+    login,
 };
