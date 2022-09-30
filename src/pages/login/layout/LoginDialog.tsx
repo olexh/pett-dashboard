@@ -44,7 +44,6 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
     });
 
     const handleLogin = (data: LoginParams) => {
-        console.log(data);
         loginUser({ data: { ...data } });
     };
 
@@ -58,8 +57,8 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
     return (
         <Dialog className={className} maxWidth="sm" fullWidth open={open} onClose={() => setOpen(false)}>
             <DialogContent>
-                <form className="withdraw-box" onSubmit={handleSubmit(handleLogin)}>
-                    <FormControl fullWidth>
+                <form onSubmit={handleSubmit(handleLogin)}>
+                    <FormControl>
                         <Grid container spacing={2} textAlign="center" justifyContent="center">
                             <Grid item md={12}>
                                 <Typography variant="h4">{t('logIn')}</Typography>
@@ -75,13 +74,11 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
                                             {...rest}
                                             value={value ?? ''}
                                             id="email"
-                                            className="form-field"
-                                            variant="outlined"
-                                            color="primary"
                                             helperText={fieldsErrors.email ? fieldsErrors.email.message : undefined}
                                             error={Boolean(fieldsErrors.email)}
                                             InputLabelProps={{ shrink: true }}
                                             fullWidth
+                                            required
                                             type="email"
                                             placeholder={t('writeYourEmail')}
                                             label={t('email')}
@@ -106,15 +103,13 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
                                             {...rest}
                                             value={value ?? ''}
                                             id="password"
-                                            className="form-field"
-                                            variant="outlined"
-                                            color="primary"
                                             helperText={
                                                 fieldsErrors.password ? fieldsErrors.password.message : undefined
                                             }
                                             error={Boolean(fieldsErrors.password)}
                                             InputLabelProps={{ shrink: true }}
                                             fullWidth
+                                            required
                                             type="password"
                                             placeholder={t('writeYourPassword')}
                                             label={t('password')}
@@ -147,7 +142,6 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen }) => {
                                     variant="contained"
                                     size="large"
                                     fullWidth
-                                    // onClick={handleLogin}
                                     disableElevation
                                     color="secondary"
                                     type="submit"
