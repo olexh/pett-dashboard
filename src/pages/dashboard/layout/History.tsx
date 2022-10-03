@@ -20,6 +20,7 @@ import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from '../../../api';
+import { TableSkeleton } from '../../../components';
 
 interface Props {
     className?: string;
@@ -35,55 +36,63 @@ const Component: FC<Props> = ({ className }) => {
         { refetchInterval: 10000 },
     );
 
+    const table = (
+        <TableContainer>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Type</TableCell>
+                        <TableCell align="center">Tx Hash</TableCell>
+                        <TableCell align="center">Date</TableCell>
+                        <TableCell align="center">Amount</TableCell>
+                        <TableCell align="right">Status</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {history?.list.map((h: PettDashboard.History) => (
+                        <TableRow hover key={h.txid}>
+                            <TableCell component="th" scope="row">
+                                {h.category.charAt(0).toUpperCase() + h.category.slice(1)}
+                            </TableCell>
+                            <TableCell align="center">{h.txid ? h.txid : '-'}</TableCell>
+                            <TableCell align="center">{moment(h.created * 1000).format('yyyy-MM-DD HH:mm')}</TableCell>
+                            <TableCell align="center">
+                                <Box display="flex" alignItems="center" justifyContent="center">
+                                    <Avatar sx={{ width: 24, height: 24, marginRight: 1 }} src={h.coin.logo} />
+                                    <NumericFormat
+                                        value={h.amount}
+                                        decimalScale={2}
+                                        fixedDecimalScale
+                                        thousandSeparator
+                                        suffix={` ${h.coin.ticker}`}
+                                        displayType="text"
+                                    />
+                                </Box>
+                            </TableCell>
+                            <TableCell align="right">{h.status.charAt(0).toUpperCase() + h.status.slice(1)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
+
     return (
         <Paper className={className} variant="outlined" square>
             <Typography variant="h5" margin={3}>
                 {t('history')}
             </Typography>
             <Divider />
-            {history && history.list.length > 0 && (
-                <TableContainer>
-                    <Table aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Type</TableCell>
-                                <TableCell align="center">Tx Hash</TableCell>
-                                <TableCell align="center">Date</TableCell>
-                                <TableCell align="center">Amount</TableCell>
-                                <TableCell align="right">Status</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {history.list.map((h: PettDashboard.History) => (
-                                <TableRow hover key={h.txid}>
-                                    <TableCell component="th" scope="row">
-                                        {h.category.charAt(0).toUpperCase() + h.category.slice(1)}
-                                    </TableCell>
-                                    <TableCell align="center">{h.txid ? h.txid : '-'}</TableCell>
-                                    <TableCell align="center">
-                                        {moment(h.created * 1000).format('yyyy-MM-DD HH:mm')}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <Box display="flex" alignItems="center" justifyContent="center">
-                                            <Avatar sx={{ width: 24, height: 24, marginRight: 1 }} src={h.coin.logo} />
-                                            <NumericFormat
-                                                value={h.amount}
-                                                decimalScale={2}
-                                                fixedDecimalScale
-                                                thousandSeparator
-                                                suffix={` ${h.coin.ticker}`}
-                                                displayType="text"
-                                            />
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {h.status.charAt(0).toUpperCase() + h.status.slice(1)}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+            {!isLoadingHistory ? (
+                history && history.list.length === 0 ? (
+                    <Box padding={3} textAlign="center">
+                        <Typography color="textSecondary">There is no transaction history yet.</Typography>
+                    </Box>
+                ) : (
+                    table
+                )
+            ) : (
+                <TableSkeleton columns={5} rows={5} />
             )}
             {history && history.list.length > 0 && (
                 <Box display="flex" justifyContent="center" padding={3}>
@@ -93,11 +102,6 @@ const Component: FC<Props> = ({ className }) => {
                         page={page}
                         onChange={(e, v) => setPage(v)}
                     />
-                </Box>
-            )}
-            {history && history.list.length === 0 && (
-                <Box padding={3} textAlign="center">
-                    <Typography color="textSecondary">There is no transaction history yet.</Typography>
                 </Box>
             )}
         </Paper>

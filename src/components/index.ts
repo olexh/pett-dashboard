@@ -1,4 +1,5 @@
 import BalanceItem from './BalanceItem';
 import Navigation from './Navigation';
+import TableSkeleton from './TableSkeleton';
 
-export { Navigation, BalanceItem };
+export { Navigation, BalanceItem, TableSkeleton };

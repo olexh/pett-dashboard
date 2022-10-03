@@ -39,7 +39,6 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
     } = useMutation(signUp, {
         onError: (e) => {
             alert(e);
-            console.log(JSON.stringify(e));
         },
     });
 
