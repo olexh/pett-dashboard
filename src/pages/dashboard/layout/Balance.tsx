@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Divider, Paper, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../../redux/Store';
-import { BalanceItem } from '../../../components';
+import { BalanceItem, BalanceSkeleton } from '../../../components';
 import { setInState } from '../../../redux/actions/app';
 import { useTranslation } from 'react-i18next';
 import { useBalance } from '../../../api';
@@ -18,7 +18,7 @@ const Component: FC<Props> = ({ className }) => {
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
     const dispatch = useAppDispatch();
 
-    const { data: balances } = useBalance({ auth: token }, { refetchInterval: 10000 });
+    const { data: balances, isLoading } = useBalance({ auth: token }, { refetchInterval: 10000 });
 
     const handleSelectBalance = (balance: PettDashboard.Balance) => {
         dispatch(setInState({ selectedBalance: balance }));
@@ -42,7 +42,8 @@ const Component: FC<Props> = ({ className }) => {
                 {t('balances')}
             </Typography>
             <Divider />
-            {balances &&
+            {!isLoading ? (
+                balances &&
                 balances.map((b: PettDashboard.Balance, index) => (
                     <>
                         {index > 0 && <Divider />}
@@ -53,7 +54,10 @@ const Component: FC<Props> = ({ className }) => {
                             {...b}
                         />
                     </>
-                ))}
+                ))
+            ) : (
+                <BalanceSkeleton />
+            )}
         </Paper>
     );
 };
