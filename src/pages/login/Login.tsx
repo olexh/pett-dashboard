@@ -136,4 +136,12 @@ export default styled(Component)`
             top: calc(100% - 224px);
         }
     }
+
+    ${({ theme }) => theme.breakpoints.down('sm')} {
+        background: ${({ theme }) => theme.palette.primary.main};
+
+        &:after {
+            display: none;
+        }
+    }
 `;
