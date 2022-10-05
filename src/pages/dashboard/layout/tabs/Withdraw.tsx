@@ -4,11 +4,11 @@ import { Box, Grid, TextField, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../redux/Store';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { NumericFormat } from 'react-number-format';
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
+import { withdraw as makeWithdraw } from '../../../../api';
 
 interface Props {
     className?: string;
@@ -22,14 +22,17 @@ const Component: FC<Props> = ({ className }) => {
     const [amount, setAmount] = useState('');
     const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
+    // TODO: test
     const {
         mutate: withdraw,
         isLoading: isLoadingWithdraw,
         data: withdrawData,
         error: withdrawError,
         isError: isErrorWithdraw,
-    } = useMutation((data: { amount: number; address: string; ticker: string }) => {
-        return axios.post(`${axios.defaults.baseURL}/finance/withdrawal`, { ...data }, { headers: { auth: token } });
+    } = useMutation(makeWithdraw, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleWithdraw = () => {
@@ -43,7 +46,14 @@ const Component: FC<Props> = ({ className }) => {
             return;
         }
 
-        withdraw({ amount: parseFloat(amount), address, ticker: selectedBalance.coin.ticker });
+        withdraw({
+            auth: token,
+            data: {
+                amount: parseFloat(amount),
+                address,
+                ticker: selectedBalance.coin.ticker,
+            },
+        });
     };
 
     useEffect(() => {

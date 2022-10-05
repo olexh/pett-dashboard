@@ -22,8 +22,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/Store';
 import moment from 'moment';
@@ -35,18 +34,11 @@ import { useSnackbar } from 'notistack';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import { Trans, useTranslation } from 'react-i18next';
+import { admin as makeAdmin, ban, useUsersList } from '../../../api';
+import { TableSkeleton } from '../../../components';
 
 interface Props {
     className?: string;
-}
-
-interface Response {
-    pagination: {
-        pages: number;
-        total: number;
-        current: number;
-    };
-    list: PettDashboard.User[];
 }
 
 const Component: FC<Props> = ({ className }) => {
@@ -59,49 +51,36 @@ const Component: FC<Props> = ({ className }) => {
     const [openBanhammerAlert, setOpenBanhammerAlert] = useState(false);
     const [selectedUser, setSelectedUser] = useState<PettDashboard.User>();
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: users, isLoading: isLoadingUsers } = useQuery<Response>(
-        ['users', token, page, search, sort, orderBy],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/admin/user/list`, {
-                    headers: { auth: token },
-                    params: { page, search, order: orderBy, sort },
-                })
-                .then((data) => data.data);
-        },
+
+    const { data: users, isLoading: isLoadingUsers } = useUsersList(
+        { auth: token, page, search, order: orderBy, sort },
         { refetchInterval: 10000 },
     );
+
     const {
         mutate: banhammer,
         isLoading: isLoadingBanhammer,
         isSuccess: isSuccessBanhammer,
         isError: isErrorBanhammer,
-    } = useMutation((req: { user: PettDashboard.User; type: 'ban' | 'unban' }) => {
-        return axios
-            .post(
-                `${axios.defaults.baseURL}/admin/user/${req.user.username}/${req.type}`,
-                {},
-                { headers: { auth: token } },
-            )
-            .then((data) => data.data);
+    } = useMutation(ban, {
+        onError: (e) => {
+            alert(e);
+        },
     });
+
     const {
         mutate: admin,
         isLoading: isLoadingAdmin,
         isSuccess: isSuccessAdmin,
         isError: isErrorAdmin,
-    } = useMutation((req: { user: PettDashboard.User; type: 'admin' | 'unadmin' }) => {
-        return axios
-            .post(
-                `${axios.defaults.baseURL}/admin/user/${req.user.username}/${req.type}`,
-                {},
-                { headers: { auth: token } },
-            )
-            .then((data) => data.data);
+    } = useMutation(makeAdmin, {
+        onError: (e) => {
+            alert(e);
+        },
     });
 
     const handleBanhammer = (user: PettDashboard.User, type: 'ban' | 'unban') => {
-        banhammer({ user, type });
+        banhammer({ auth: token, user, type });
         setOpenBanhammerAlert(false);
     };
 
@@ -116,7 +95,7 @@ const Component: FC<Props> = ({ className }) => {
     };
 
     const handleAdmin = (user: PettDashboard.User, type: 'admin' | 'unadmin') => {
-        admin({ user, type });
+        admin({ auth: token, user, type });
     };
 
     const handleOrderBy = (property: string) => {
@@ -141,6 +120,121 @@ const Component: FC<Props> = ({ className }) => {
         }
     }, [isSuccessAdmin, isErrorAdmin]);
 
+    const table = (
+        <TableContainer>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Username</TableCell>
+                        <TableCell align="center">Email</TableCell>
+                        <TableCell align="center" sortDirection={orderBy === 'email-activated' ? sort : false}>
+                            <TableSortLabel
+                                active={orderBy === 'email-activated'}
+                                direction={orderBy === 'email-activated' ? sort : 'asc'}
+                                onClick={() => handleOrderBy('email-activated')}
+                            >
+                                Email activated
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center">Phone Number</TableCell>
+                        <TableCell align="center" sortDirection={orderBy === 'created' ? sort : false}>
+                            <TableSortLabel
+                                active={orderBy === 'created'}
+                                direction={orderBy === 'created' ? sort : 'asc'}
+                                onClick={() => handleOrderBy('created')}
+                            >
+                                Created
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center" sortDirection={orderBy === 'admin' ? sort : false}>
+                            <TableSortLabel
+                                active={orderBy === 'admin'}
+                                direction={orderBy === 'admin' ? sort : 'asc'}
+                                onClick={() => handleOrderBy('admin')}
+                            >
+                                Admin
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center" sortDirection={orderBy === 'banned' ? sort : false}>
+                            <TableSortLabel
+                                active={orderBy === 'banned'}
+                                direction={orderBy === 'banned' ? sort : 'asc'}
+                                onClick={() => handleOrderBy('banned')}
+                            >
+                                Banned
+                            </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="right">Actions</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {users?.list.map((u: PettDashboard.User) => (
+                        <TableRow hover key={u.reference}>
+                            <TableCell component="th" scope="row">
+                                <Link component={RouterLink} to={`/admin/user/${u.username}`}>
+                                    {u.username}
+                                </Link>
+                            </TableCell>
+                            <TableCell align="center">{u.email ? u.email : '-'}</TableCell>
+                            <TableCell align="center">{u.email_activated ? 'Yes' : 'No'}</TableCell>
+                            <TableCell align="center">{u.phone_number ? u.phone_number : '-'}</TableCell>
+                            <TableCell align="center">{moment(u.created * 1000).format('yyyy-MM-DD HH:mm')}</TableCell>
+                            <TableCell align="center">{u.admin ? 'Yes' : 'No'}</TableCell>
+                            <TableCell align="center">{u.banned ? 'Yes' : 'No'}</TableCell>
+                            <TableCell align="right">
+                                <Box display="flex" justifyContent="flex-end">
+                                    <Tooltip title="Fund">
+                                        <IconButton component={RouterLink} to={`/admin/funding/${u.username}`}>
+                                            <CurrencyBitcoinIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    {!u.admin ? (
+                                        <Tooltip title="Give Admin Role">
+                                            <IconButton
+                                                onClick={() => handleAdmin(u, 'admin')}
+                                                disabled={isLoadingAdmin}
+                                            >
+                                                <GroupAddIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip title="Restrict Admin Role">
+                                            <IconButton
+                                                onClick={() => handleAdmin(u, 'unadmin')}
+                                                disabled={isLoadingAdmin}
+                                            >
+                                                <GroupRemoveIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
+                                    {u.banned ? (
+                                        <Tooltip title="Unban">
+                                            <IconButton
+                                                onClick={() => handleBanhammer(u, 'unban')}
+                                                disabled={isLoadingBanhammer}
+                                            >
+                                                <UndoIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip title="Ban">
+                                            <IconButton
+                                                onClick={() => handleBanhammerAlert(u)}
+                                                disabled={isLoadingBanhammer}
+                                            >
+                                                <BlockIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
+                                </Box>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
+
     return (
         <Paper className={className} variant="outlined" square>
             <Box p={3}>
@@ -159,121 +253,16 @@ const Component: FC<Props> = ({ className }) => {
                 </Grid>
             </Box>
             <Divider />
-            {users && users.list.length > 0 && (
-                <TableContainer>
-                    <Table aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Username</TableCell>
-                                <TableCell align="center">Email</TableCell>
-                                <TableCell align="center" sortDirection={orderBy === 'email-activated' ? sort : false}>
-                                    <TableSortLabel
-                                        active={orderBy === 'email-activated'}
-                                        direction={orderBy === 'email-activated' ? sort : 'asc'}
-                                        onClick={() => handleOrderBy('email-activated')}
-                                    >
-                                        Email activated
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell align="center">Phone Number</TableCell>
-                                <TableCell align="center" sortDirection={orderBy === 'created' ? sort : false}>
-                                    <TableSortLabel
-                                        active={orderBy === 'created'}
-                                        direction={orderBy === 'created' ? sort : 'asc'}
-                                        onClick={() => handleOrderBy('created')}
-                                    >
-                                        Created
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell align="center" sortDirection={orderBy === 'admin' ? sort : false}>
-                                    <TableSortLabel
-                                        active={orderBy === 'admin'}
-                                        direction={orderBy === 'admin' ? sort : 'asc'}
-                                        onClick={() => handleOrderBy('admin')}
-                                    >
-                                        Admin
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell align="center" sortDirection={orderBy === 'banned' ? sort : false}>
-                                    <TableSortLabel
-                                        active={orderBy === 'banned'}
-                                        direction={orderBy === 'banned' ? sort : 'asc'}
-                                        onClick={() => handleOrderBy('banned')}
-                                    >
-                                        Banned
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell align="right">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {users.list.map((u: PettDashboard.User) => (
-                                <TableRow hover key={u.reference}>
-                                    <TableCell component="th" scope="row">
-                                        <Link component={RouterLink} to={`/admin/user/${u.username}`}>
-                                            {u.username}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell align="center">{u.email ? u.email : '-'}</TableCell>
-                                    <TableCell align="center">{u.email_activated ? 'Yes' : 'No'}</TableCell>
-                                    <TableCell align="center">{u.phone_number ? u.phone_number : '-'}</TableCell>
-                                    <TableCell align="center">
-                                        {moment(u.created * 1000).format('yyyy-MM-DD HH:mm')}
-                                    </TableCell>
-                                    <TableCell align="center">{u.admin ? 'Yes' : 'No'}</TableCell>
-                                    <TableCell align="center">{u.banned ? 'Yes' : 'No'}</TableCell>
-                                    <TableCell align="right">
-                                        <Box display="flex" justifyContent="flex-end">
-                                            <Tooltip title="Fund">
-                                                <IconButton component={RouterLink} to={`/admin/funding/${u.username}`}>
-                                                    <CurrencyBitcoinIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            {!u.admin ? (
-                                                <Tooltip title="Give Admin Role">
-                                                    <IconButton
-                                                        onClick={() => handleAdmin(u, 'admin')}
-                                                        disabled={isLoadingAdmin}
-                                                    >
-                                                        <GroupAddIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            ) : (
-                                                <Tooltip title="Restrict Admin Role">
-                                                    <IconButton
-                                                        onClick={() => handleAdmin(u, 'unadmin')}
-                                                        disabled={isLoadingAdmin}
-                                                    >
-                                                        <GroupRemoveIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
-                                            {u.banned ? (
-                                                <Tooltip title="Unban">
-                                                    <IconButton
-                                                        onClick={() => handleBanhammer(u, 'unban')}
-                                                        disabled={isLoadingBanhammer}
-                                                    >
-                                                        <UndoIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            ) : (
-                                                <Tooltip title="Ban">
-                                                    <IconButton
-                                                        onClick={() => handleBanhammerAlert(u)}
-                                                        disabled={isLoadingBanhammer}
-                                                    >
-                                                        <BlockIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+            {!isLoadingUsers ? (
+                users && users.list.length === 0 ? (
+                    <Box padding={3} textAlign="center">
+                        <Typography color="textSecondary">There is no users yet.</Typography>
+                    </Box>
+                ) : (
+                    table
+                )
+            ) : (
+                <TableSkeleton columns={8} rows={10} />
             )}
             {users && users.list.length > 0 && (
                 <Box display="flex" justifyContent="center" padding={3}>
@@ -283,11 +272,6 @@ const Component: FC<Props> = ({ className }) => {
                         page={page}
                         onChange={(e, v) => setPage(v)}
                     />
-                </Box>
-            )}
-            {users && users.list.length === 0 && (
-                <Box padding={3} textAlign="center">
-                    <Typography color="textSecondary">There is no users yet.</Typography>
                 </Box>
             )}
             <Dialog

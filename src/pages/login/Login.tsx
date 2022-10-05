@@ -43,7 +43,7 @@ const Component: FC<Props> = ({ className }) => {
     return (
         <div className={className}>
             <Container className="container">
-                <img src={logo_transparent} />
+                <img src={logo_transparent} alt="logo" />
                 <Typography variant="h3" marginY={2} color="white" align="center">
                     {t('pettNetworkWebWallet')}
                 </Typography>
@@ -120,10 +120,9 @@ export default styled(Component)`
         content: ' ';
         position: absolute;
         z-index: 1;
-        background: url(${cat});
         width: 266px;
         height: 224px;
-        background-repeat: no-repeat;
+        background: url(${cat}) no-repeat;
         background-size: contain;
         top: calc(45vw - 112px);
         left: calc(50vw - 133px);

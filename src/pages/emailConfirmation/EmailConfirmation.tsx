@@ -2,8 +2,7 @@ import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { Container } from '@mui/material';
 import { useHistory, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useEmailConfirmation } from '../../api';
 
 interface Props {
     className?: string;
@@ -12,13 +11,7 @@ interface Props {
 const Component: FC<Props> = ({ className }) => {
     const { token } = useParams<{ token?: string }>();
     const history = useHistory();
-    const { data, isError } = useQuery(
-        ['emailConfirmation', token],
-        () => {
-            return axios.post(`${axios.defaults.baseURL}/auth/activate`, { token });
-        },
-        { retry: false },
-    );
+    const { data, isError } = useEmailConfirmation({ token }, { retry: false });
 
     useEffect(() => {
         if (!token) {

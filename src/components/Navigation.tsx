@@ -19,10 +19,9 @@ import MobileDrawer from './MobileDrawer';
 import { RootState, useAppDispatch } from '../redux/Store';
 import { resetState, setInState } from '../redux/actions/app';
 import { useSelector } from 'react-redux';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useProfile } from '../api';
 
 interface Props {
     className?: string;
@@ -56,17 +55,7 @@ const Navigation: FC<Props> = ({ className }) => {
     const [isDrawerOpened, setIsDrawerOpened] = useState(false);
     const mobile = useMediaQuery(({ breakpoints }: Theme) => breakpoints.down('sm'));
     const token = useSelector((state: RootState) => state.app.secret);
-    const { data: profileData } = useQuery(
-        ['profile', token],
-        () => {
-            return axios
-                .get(`${axios.defaults.baseURL}/user/profile`, {
-                    headers: { auth: token },
-                })
-                .then((data) => data.data);
-        },
-        { retry: false },
-    );
+    const { data: profileData } = useProfile({ auth: token }, { retry: false });
 
     const logoPETT = (
         <div className="logo-pett">
@@ -134,7 +123,7 @@ const Navigation: FC<Props> = ({ className }) => {
                         <div className="mobile-menu-box">
                             <Container className="mobile">
                                 <ButtonBase style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img src={logo} className="mobile-logo" />
+                                    <img src={logo} className="mobile-logo" alt="logo" />
                                 </ButtonBase>
                                 <IconButton color="inherit" size="large" onClick={() => setIsDrawerOpened(true)}>
                                     <MenuIcon />

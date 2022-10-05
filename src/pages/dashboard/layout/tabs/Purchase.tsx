@@ -4,39 +4,26 @@ import { Grid, IconButton, Link, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useBank } from '../../../../api';
+import { PurchaseSkeleton } from '../../../../components';
 
 interface Props {
     className?: string;
 }
 
-interface Response {
-    depositor: string;
-    account: string;
-    bank: string;
-}
-
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
-    const { data: bank } = useQuery<Response>(
-        ['bank'],
-        () => {
-            return axios.get(`${axios.defaults.baseURL}/system/bank`).then((data) => data.data);
-        },
-        { refetchInterval: 10000 },
-    );
+    const { data: bank, isLoading } = useBank({ refetchInterval: 10000 });
 
-    if (!bank) return null;
-
-    return (
-        <Grid className={className} container spacing={4}>
+    const content = (
+        <>
+            {' '}
             <Grid item md={6} sm={6} xs={6}>
                 <Typography variant="subtitle2" color="textSecondary">
                     {t('bankName')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
-                    {bank.bank}
+                    {bank?.bank}
                 </Typography>
             </Grid>
             <Grid item md={6} sm={6} xs={6}>
@@ -44,8 +31,8 @@ const Component: FC<Props> = ({ className }) => {
                     {t('bankAccountNo')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
-                    {bank.account}
-                    <CopyToClipboard text={bank.account}>
+                    {bank?.account}
+                    <CopyToClipboard text={bank?.account || ''}>
                         <IconButton size="small">
                             <ContentCopyIcon />
                         </IconButton>
@@ -57,8 +44,8 @@ const Component: FC<Props> = ({ className }) => {
                     {t('depositor')}
                 </Typography>
                 <Typography variant="body2" fontWeight={700}>
-                    {bank.depositor}
-                    <CopyToClipboard text={bank.depositor}>
+                    {bank?.depositor}
+                    <CopyToClipboard text={bank?.depositor || ''}>
                         <IconButton size="small">
                             <ContentCopyIcon />
                         </IconButton>
@@ -78,6 +65,18 @@ const Component: FC<Props> = ({ className }) => {
                     {t('ifYouWillHaveIssuesOrQuestions')} <Link href="#">{t('pleaseContactOurSupport')}</Link>.
                 </Typography>
             </Grid>
+        </>
+    );
+
+    return (
+        <Grid className={className} container spacing={4}>
+            {!isLoading ? (
+                bank && content
+            ) : (
+                <Grid item md={12} sm={12} xs={12}>
+                    <PurchaseSkeleton />
+                </Grid>
+            )}
         </Grid>
     );
 };
