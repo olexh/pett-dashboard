@@ -6,7 +6,7 @@ interface Params {
     auth: string;
 }
 
-const ban = async (params: Params) => {
+export default async function (params: Params) {
     const { auth, user, type } = params;
 
     try {
@@ -20,6 +20,4 @@ const ban = async (params: Params) => {
         console.error(e);
         throw e;
     }
-};
-
-export default ban;
+}

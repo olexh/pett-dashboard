@@ -5,7 +5,7 @@ interface Params {
     req: { amount: number; username: string; ticker: string; timelock?: number };
 }
 
-const funding = async (params: Params) => {
+export default async function (params: Params) {
     const { auth, req } = params;
 
     try {
@@ -17,6 +17,4 @@ const funding = async (params: Params) => {
         console.error(e);
         throw e;
     }
-};
-
-export default funding;
+}
