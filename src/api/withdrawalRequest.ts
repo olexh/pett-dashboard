@@ -6,7 +6,7 @@ interface Params {
     isRefunded: boolean;
 }
 
-const withdrawalRequest = async (params: Params) => {
+export default async function (params: Params) {
     const { auth, req, isRefunded } = params;
 
     try {
@@ -20,6 +20,4 @@ const withdrawalRequest = async (params: Params) => {
         console.error(e);
         throw e;
     }
-};
-
-export default withdrawalRequest;
+}

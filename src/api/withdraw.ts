@@ -5,7 +5,7 @@ interface Params {
     data: { amount: number; address: string; ticker: string };
 }
 
-const withdraw = async (params: Params) => {
+export default async function (params: Params) {
     const { auth, data } = params;
 
     try {
@@ -20,6 +20,4 @@ const withdraw = async (params: Params) => {
         console.error(e);
         throw e;
     }
-};
-
-export default withdraw;
+}
