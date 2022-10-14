@@ -5,7 +5,7 @@ import cat from '../../assets/cat.png';
 import logo_transparent from '../../assets/logo_transparent.png';
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
-import { LoginDialog, SignUpDialog } from './layout';
+import { ChangePasswordDialog, LoginDialog, SignUpDialog } from './layout';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/Store';
@@ -21,15 +21,24 @@ const Component: FC<Props> = ({ className }) => {
     const language = useSelector((state: RootState) => state.app.language);
     const [signUpOpen, setSignUpOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
+    const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
     const openLogin = () => {
         setSignUpOpen(false);
         setLoginOpen(true);
+        setChangePasswordOpen(false);
     };
 
     const openSignUp = () => {
         setSignUpOpen(true);
         setLoginOpen(false);
+        setChangePasswordOpen(false);
+    };
+
+    const openChangePassword = () => {
+        setSignUpOpen(false);
+        setLoginOpen(false);
+        setChangePasswordOpen(true);
     };
 
     const switchLang = () => {
@@ -85,8 +94,14 @@ const Component: FC<Props> = ({ className }) => {
                 </Grid>
             </Container>
             <div className="back" />
-            <LoginDialog open={loginOpen} setOpen={setLoginOpen} signUpOpen={openSignUp} />
+            <LoginDialog
+                open={loginOpen}
+                setOpen={setLoginOpen}
+                signUpOpen={openSignUp}
+                changePasswordOpen={openChangePassword}
+            />
             <SignUpDialog open={signUpOpen} setOpen={setSignUpOpen} loginOpen={openLogin} />
+            <ChangePasswordDialog open={changePasswordOpen} setOpen={setChangePasswordOpen} loginOpen={openLogin} />
         </div>
     );
 };
