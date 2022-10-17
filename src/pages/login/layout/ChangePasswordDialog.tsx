@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { Button, Dialog, DialogContent, FormControl, Grid, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -8,22 +8,20 @@ import { useAppDispatch } from '../../../redux/Store';
 import { useTranslation } from 'react-i18next';
 import { login } from '../../../api';
 import { Controller, useForm } from 'react-hook-form';
-import { ChangePasswordDialog } from './index';
 
 interface Props {
     className?: string;
     open: boolean;
     setOpen: (value: boolean) => void;
-    signUpOpen: () => void;
-    changePasswordOpen: () => void;
+    loginOpen: () => void;
 }
 
-interface LoginParams {
+interface ChangePasswordParams {
     email: string;
-    password: string;
+    newPassword: string;
 }
 
-const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePasswordOpen }) => {
+const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
@@ -32,8 +30,9 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
         handleSubmit,
         control,
         formState: { errors: fieldsErrors },
-    } = useForm<LoginParams>();
+    } = useForm<ChangePasswordParams>();
 
+    // change logic:
     const {
         mutate: loginUser,
         isLoading: isLoadingLogin,
@@ -45,8 +44,8 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
         },
     });
 
-    const handleLogin = (data: LoginParams) => {
-        loginUser({ data: { ...data } });
+    const handleLogin = (data: ChangePasswordParams) => {
+        // loginUser({ data: { ...data } });
     };
 
     useEffect(() => {
@@ -55,7 +54,7 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
             setOpen(false);
         }
     }, [isSuccessLogin]);
-
+    //
     return (
         <Dialog className={className} maxWidth="sm" fullWidth open={open} onClose={() => setOpen(false)}>
             <DialogContent>
@@ -63,10 +62,12 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
                     <FormControl>
                         <Grid container spacing={2} textAlign="center" justifyContent="center">
                             <Grid item md={12}>
-                                <Typography variant="h4">{t('logIn')}</Typography>
+                                <Typography variant="h4">Change Password</Typography>
                             </Grid>
                             <Grid item md={12}>
-                                <Typography align="center">{t('pleaseFillUpTheFieldsToLogIntoAccount')}</Typography>
+                                <Typography align="center">
+                                    Please, fill up the fields to change password to your account.
+                                </Typography>
                             </Grid>
                             <Grid item md={12} xs={12}>
                                 <Controller
@@ -99,23 +100,23 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
                             </Grid>
                             <Grid item md={12} xs={12}>
                                 <Controller
-                                    name="password"
+                                    name="newPassword"
                                     render={({ field: { value, ...rest } }) => (
                                         <TextField
                                             {...rest}
                                             value={value ?? ''}
                                             id="password"
                                             helperText={
-                                                fieldsErrors.password ? fieldsErrors.password.message : undefined
+                                                fieldsErrors.newPassword ? fieldsErrors.newPassword.message : undefined
                                             }
-                                            error={Boolean(fieldsErrors.password)}
+                                            error={Boolean(fieldsErrors.newPassword)}
                                             InputLabelProps={{ shrink: true }}
                                             fullWidth
                                             required
                                             type="password"
                                             placeholder={t('writeYourPassword')}
-                                            label={t('password')}
-                                            {...register('password')}
+                                            label="New password"
+                                            {...register('newPassword')}
                                         />
                                     )}
                                     control={control}
@@ -124,22 +125,16 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
                                     }}
                                 />
                             </Grid>
-                            <Grid item container md={12} xs={6} justifySelf="flex-start">
-                                <Button disableElevation color="secondary" onClick={changePasswordOpen}>
-                                    <Typography textTransform="none">Forgot password?</Typography>
-                                </Button>
-                            </Grid>
                             <Grid item md={4} xs={6}>
                                 <Button
                                     variant="outlined"
                                     fullWidth
                                     size="large"
-                                    disabled={isLoadingLogin}
-                                    onClick={signUpOpen}
+                                    onClick={loginOpen}
                                     disableElevation
                                     color="secondary"
                                 >
-                                    {t('signUp')}
+                                    Cancel
                                 </Button>
                             </Grid>
                             <Grid item md={4} xs={6}>
@@ -147,6 +142,7 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
                                     loading={isLoadingLogin}
                                     loadingPosition="start"
                                     variant="contained"
+                                    disabled
                                     size="large"
                                     fullWidth
                                     disableElevation
