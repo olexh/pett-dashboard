@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Box, Container, Tab, Tabs } from '@mui/material';
-import { Funding, History, User, Users, Withdrawal, WithdrawalRequest } from './layout';
+import { Funding, FundingList, History, User, Users, Withdrawal, WithdrawalRequest } from './layout';
 import { Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,7 @@ const Component: FC<Props> = ({ className }) => {
                             component={Link}
                             to="/admin/withdrawal"
                         />
+                        <Tab label={t('fundingList')} value="/admin/fundlist" component={Link} to="/admin/fundlist" />
                         <Tab label={t('funding')} value="/admin/funding" component={Link} to="/admin/funding" />
                         <Tab
                             label={t('withdrawalRequest')}
@@ -55,6 +56,11 @@ const Component: FC<Props> = ({ className }) => {
                     <Route path="/admin/withdrawal" exact>
                         <Box padding={3}>
                             <Withdrawal />
+                        </Box>
+                    </Route>
+                    <Route path="/admin/fundlist" exact>
+                        <Box padding={3}>
+                            <FundingList />
                         </Box>
                     </Route>
                     <Route path="/admin/funding/:usernameParam?" exact>

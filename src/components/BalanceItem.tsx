@@ -9,7 +9,7 @@ interface Props extends PettDashboard.Balance, ButtonBaseProps {
     selected?: boolean;
 }
 
-const Component: FC<Props> = ({ className, selected, coin, available, frozen, ...props }) => {
+const Component: FC<Props> = ({ className, selected, coin, available, frozen, usd, ...props }) => {
     return (
         <ButtonBase className={className} {...props}>
             <Box padding={3} width="100%" className="box">
@@ -47,6 +47,21 @@ const Component: FC<Props> = ({ className, selected, coin, available, frozen, ..
                                     <LockIcon fontSize="small" />
                                 </Box>
                             </Typography>
+                            {usd !== null && (
+                                <>
+                                    {' '}
+                                    <Typography component="span" color="#32a96d" fontWeight={700}>
+                                        <NumericFormat
+                                            value={usd}
+                                            decimalScale={2}
+                                            fixedDecimalScale
+                                            suffix="$"
+                                            thousandSeparator
+                                            displayType="text"
+                                        />
+                                    </Typography>
+                                </>
+                            )}
                         </Typography>
                     </Grid>
                 </Grid>

@@ -65,5 +65,10 @@
   "withdrawalReference": "Withdrawal Reference",
   "purchase": "Purchase",
   "searchByUsername": "Search by username",
-  "txid": "Txid"
+  "txid": "Txid",
+  "fundingList": "Funding List",
+  "refund": "Make refund",
+  "doYouWantToMakeRefund": "Do you want to make a refund?",
+  "changePassword": "Change Password",
+  "typeNewPassword": "Type a new password"
 }

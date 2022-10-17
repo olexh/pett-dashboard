@@ -65,5 +65,10 @@
   "withdrawalReference": "출금 참조",
   "purchase": "구매",
   "searchByUsername": "사용자 이름으로 검색",
-  "txid": "Txid"
+  "txid": "Txid",
+  "fundingList": "자금 목록",
+  "refund": "환불하기",
+  "doYouWantToMakeRefund": "환불하시겠습니까?",
+  "changePassword": "비밀번호 변경",
+  "typeNewPassword": "새 비밀번호를 입력하세요"
 }

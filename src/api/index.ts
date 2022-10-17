@@ -4,6 +4,7 @@ import useUserInfo from './useUserInfo';
 import useAdminHistory from './useAdminHistory';
 import useUsersList from './useUsersList';
 import useAdminWithdrawalList from './useAdminWithdrawalList';
+import useAdminFundingList from './useAdminFundingList';
 
 import useProfile from './useProfile';
 import useBank from './useBank';
@@ -19,6 +20,8 @@ import signUp from './signUp';
 import login from './login';
 
 import useEmailConfirmation from './useEmailConfirmation';
+import refund from './refund';
+import changePassword from './changePassword';
 
 export {
     useProfile,
@@ -28,10 +31,12 @@ export {
     useAdminHistory,
     useUsersList,
     useAdminWithdrawalList,
+    useAdminFundingList,
     useBank,
     useBalance,
     useHistory,
     ban,
+    refund,
     admin,
     funding,
     withdrawalRequest,
@@ -39,4 +44,5 @@ export {
     signUp,
     useEmailConfirmation,
     login,
+    changePassword,
 };

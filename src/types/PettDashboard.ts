@@ -4,6 +4,7 @@ declare namespace PettDashboard {
         reference: string;
         available: number;
         frozen: number;
+        usd: number | null;
         coin: {
             withdrawals_enabled: boolean;
             deposits_enabled: boolean;
@@ -62,6 +63,8 @@ declare namespace PettDashboard {
         refund_time: number;
         sent_time: number;
         coin: {
+            withdrawals_enabled: boolean;
+            deposits_enabled: boolean;
             min_withdrawal: number;
             confirmations: number;
             min_deposit: number;
@@ -71,5 +74,11 @@ declare namespace PettDashboard {
             name: string;
             logo: string;
         };
+    };
+
+    type Funding = Withdrawal & {
+        funded_time: number;
+        refunded_time: number;
+        timelock: number;
     };
 }
