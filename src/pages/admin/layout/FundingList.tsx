@@ -3,11 +3,7 @@ import styled from 'styled-components';
 import {
     Avatar,
     Box,
-    Button,
-    Dialog,
-    DialogContent,
     Divider,
-    Grid,
     IconButton,
     Link,
     Pagination,
@@ -32,6 +28,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { Link as RouterLink } from 'react-router-dom';
+import { RefundDialog } from '../components';
 
 interface Props {
     className?: string;
@@ -160,41 +157,11 @@ const Component: FC<Props> = ({ className }) => {
                     />
                 </Box>
             )}
-            <Dialog
-                maxWidth="sm"
-                fullWidth
+            <RefundDialog
                 open={openRefundAlert && Boolean(selectedFunding)}
                 onClose={handleCloseRefundAlert}
-            >
-                <DialogContent>
-                    <Grid container direction="column" spacing={2} textAlign="center">
-                        <Grid item md={12}>
-                            <Typography variant="h4">{t('refund')}</Typography>
-                        </Grid>
-                        <Grid item md={12}>
-                            <Typography align="center">{t('doYouWantToMakeRefund')}</Typography>
-                        </Grid>
-                        <Grid item container spacing={2} md={12} justifyContent="center">
-                            <Grid item md="auto">
-                                <Button color="secondary" disableElevation onClick={handleCloseRefundAlert}>
-                                    {t('cancel')}
-                                </Button>
-                            </Grid>
-                            <Grid item md="auto">
-                                <Button
-                                    color="secondary"
-                                    disableElevation
-                                    variant="contained"
-                                    onClick={handleRefund}
-                                    autoFocus
-                                >
-                                    {t('confirm')}
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-            </Dialog>
+                handleRefund={handleRefund}
+            />
         </Paper>
     );
 };

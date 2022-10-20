@@ -11,7 +11,7 @@ const Component: FC<Props> = ({ className }) => {
         <Grid className={className} item md xs={12}>
             <Paper variant="outlined" square>
                 <Typography variant="h5" margin={3}>
-                    <Skeleton width={40} animation="wave" />
+                    <Skeleton width={140} animation="wave" />
                 </Typography>
                 <Divider />
                 <Box p={3}>
