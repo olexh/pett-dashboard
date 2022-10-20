@@ -5,7 +5,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useTranslation } from 'react-i18next';
 import { useBank } from '../../../../api';
-import { PurchaseSkeleton } from '../../../../components';
+import { PurchaseSkeleton } from '../../components';
 
 interface Props {
     className?: string;
@@ -17,7 +17,6 @@ const Component: FC<Props> = ({ className }) => {
 
     const content = (
         <>
-            {' '}
             <Grid item md={6} sm={6} xs={6}>
                 <Typography variant="subtitle2" color="textSecondary">
                     {t('bankName')}

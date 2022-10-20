@@ -7,10 +7,10 @@ import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { changePassword, useUserInfo } from '../../../../../api';
-import UserInfoSkeleton from '../../../../../components/UserInfoSkeleton';
 import { LoadingButton } from '@mui/lab';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
+import { UserInfoSkeleton } from '../../../components';
 
 interface Props {
     className?: string;
