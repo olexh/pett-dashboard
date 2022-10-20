@@ -41,7 +41,7 @@ function TabPanel(props: TabPanelProps) {
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const [value, setValue] = React.useState(0);
-    const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
+    const selectedBalance: Dashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);

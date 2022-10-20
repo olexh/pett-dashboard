@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 import { Box, Divider, Grid, MenuItem, Paper, Select, SelectChangeEvent, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
-import { funding as makeFunding } from '../../../api';
+import { funding as makeFunding, useAdminStats } from '../../../api';
 
 interface Props {
     className?: string;
@@ -26,17 +26,23 @@ const Component: FC<Props> = ({ className }) => {
     const [amount, setAmount] = useState('');
     const [timelock, setTimelock] = useState<Moment | null>(null);
     const token = useSelector((state: RootState) => state.app.secret);
+    const { data: statsData } = useAdminStats({ auth: token });
 
     //todo: test
-    const {
-        mutate: funding,
-        isLoading: isLoadingFunding,
-        data: fundingData,
-        error: fundingError,
-        isError: isErrorFunding,
-    } = useMutation(makeFunding, {
-        onError: (e) => {
-            alert(e);
+    const { mutate: funding, isLoading: isLoadingFunding } = useMutation(makeFunding, {
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
+            setTicker('');
+            setAmount('');
+            setTimelock(null);
+            setUsername('');
+        },
+        onSuccess: () => {
+            enqueueSnackbar('Funds has been successfully sent', { variant: 'success' });
+            setTicker('');
+            setAmount('');
+            setTimelock(null);
+            setUsername('');
         },
     });
 
@@ -70,26 +76,6 @@ const Component: FC<Props> = ({ className }) => {
             },
         });
     };
-
-    useEffect(() => {
-        if (fundingData && !isLoadingFunding) {
-            enqueueSnackbar('Funds has been successfully sent', { variant: 'success' });
-            setTicker('');
-            setAmount('');
-            setTimelock(null);
-            setUsername('');
-        }
-    }, [fundingData]);
-
-    useEffect(() => {
-        if (fundingError && isErrorFunding) {
-            enqueueSnackbar('Something went wrong', { variant: 'error' });
-            setTicker('');
-            setAmount('');
-            setTimelock(null);
-            setUsername('');
-        }
-    }, [fundingError]);
 
     return (
         <Grid className={className} container justifyContent="center">
@@ -130,7 +116,12 @@ const Component: FC<Props> = ({ className }) => {
                                 {t('coin')}
                             </Typography>
                             <Select size="small" fullWidth value={ticker} onChange={handleChangeTicker}>
-                                <MenuItem value="PETT">{t('pett')}</MenuItem>
+                                {statsData &&
+                                    statsData.coins.map((c) => (
+                                        <MenuItem key={c.coin.reference} value={c.coin.ticker}>
+                                            {c.coin.ticker}
+                                        </MenuItem>
+                                    ))}
                             </Select>
                         </Box>
                         <Box marginBottom={3}>

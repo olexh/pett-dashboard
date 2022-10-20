@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Box, Container, Tab, Tabs } from '@mui/material';
-import { Funding, FundingList, History, User, Users, Withdrawal, WithdrawalRequest } from './layout';
+import { Funding, FundingList, History, Stats, User, Users, Withdrawal, WithdrawalRequest } from './layout';
 import { Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -35,9 +35,15 @@ const Component: FC<Props> = ({ className }) => {
                             component={Link}
                             to="/admin/request"
                         />
+                        <Tab label={t('stats')} value="/admin/stats" component={Link} to="/admin/stats" />
                     </Tabs>
                 </Box>
                 <Switch>
+                    <Route path="/admin/stats" exact>
+                        <Box padding={3}>
+                            <Stats />
+                        </Box>
+                    </Route>
                     <Route path="/admin/user/:usernameParam" exact>
                         <Box padding={3}>
                             <User />

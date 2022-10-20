@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 import {
     Box,
@@ -49,7 +49,7 @@ const Component: FC<Props> = ({ className }) => {
     const [orderBy, setOrderBy] = useState('created');
     const [sort, setSort] = useState<'desc' | 'asc' | undefined>('desc');
     const [openBanhammerAlert, setOpenBanhammerAlert] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<PettDashboard.User>();
+    const [selectedUser, setSelectedUser] = useState<Dashboard.User>();
     const token = useSelector((state: RootState) => state.app.secret);
 
     const { data: users, isLoading: isLoadingUsers } = useUsersList(
@@ -57,34 +57,30 @@ const Component: FC<Props> = ({ className }) => {
         { refetchInterval: 10000 },
     );
 
-    const {
-        mutate: banhammer,
-        isLoading: isLoadingBanhammer,
-        isSuccess: isSuccessBanhammer,
-        isError: isErrorBanhammer,
-    } = useMutation(ban, {
-        onError: (e) => {
-            alert(e);
+    const { mutate: banhammer, isLoading: isLoadingBanhammer } = useMutation(ban, {
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
+        },
+        onSuccess: () => {
+            enqueueSnackbar('Banhammer has been successfully done', { variant: 'success' });
         },
     });
 
-    const {
-        mutate: admin,
-        isLoading: isLoadingAdmin,
-        isSuccess: isSuccessAdmin,
-        isError: isErrorAdmin,
-    } = useMutation(makeAdmin, {
-        onError: (e) => {
-            alert(e);
+    const { mutate: admin, isLoading: isLoadingAdmin } = useMutation(makeAdmin, {
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
+        },
+        onSuccess: () => {
+            enqueueSnackbar('Admin status has been successfully changed', { variant: 'success' });
         },
     });
 
-    const handleBanhammer = (user: PettDashboard.User, type: 'ban' | 'unban') => {
+    const handleBanhammer = (user: Dashboard.User, type: 'ban' | 'unban') => {
         banhammer({ auth: token, user, type });
         setOpenBanhammerAlert(false);
     };
 
-    const handleBanhammerAlert = (user: PettDashboard.User) => {
+    const handleBanhammerAlert = (user: Dashboard.User) => {
         setSelectedUser(user);
         setOpenBanhammerAlert(true);
     };
@@ -94,7 +90,7 @@ const Component: FC<Props> = ({ className }) => {
         setSelectedUser(undefined);
     };
 
-    const handleAdmin = (user: PettDashboard.User, type: 'admin' | 'unadmin') => {
+    const handleAdmin = (user: Dashboard.User, type: 'admin' | 'unadmin') => {
         admin({ auth: token, user, type });
     };
 
@@ -103,22 +99,6 @@ const Component: FC<Props> = ({ className }) => {
         setSort(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
-
-    useEffect(() => {
-        if (isSuccessBanhammer) {
-            enqueueSnackbar('Banhammer has been successfully done', { variant: 'success' });
-        } else if (isErrorBanhammer) {
-            enqueueSnackbar('Something went wrong', { variant: 'error' });
-        }
-    }, [isSuccessBanhammer, isErrorBanhammer]);
-
-    useEffect(() => {
-        if (isSuccessAdmin) {
-            enqueueSnackbar('Admin status has been successfully changed', { variant: 'success' });
-        } else if (isErrorAdmin) {
-            enqueueSnackbar('Something went wrong', { variant: 'error' });
-        }
-    }, [isSuccessAdmin, isErrorAdmin]);
 
     const table = (
         <TableContainer>
@@ -168,7 +148,7 @@ const Component: FC<Props> = ({ className }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {users?.list.map((u: PettDashboard.User) => (
+                    {users?.list.map((u: Dashboard.User) => (
                         <TableRow hover key={u.reference}>
                             <TableCell component="th" scope="row">
                                 <Link component={RouterLink} to={`/admin/user/${u.username}`}>
@@ -178,7 +158,7 @@ const Component: FC<Props> = ({ className }) => {
                             <TableCell align="center">{u.email ? u.email : '-'}</TableCell>
                             <TableCell align="center">{u.email_activated ? 'Yes' : 'No'}</TableCell>
                             <TableCell align="center">{u.phone_number ? u.phone_number : '-'}</TableCell>
-                            <TableCell align="center">{moment(u.created * 1000).format('yyyy-MM-DD HH:mm')}</TableCell>
+                            <TableCell align="center">{moment(u.created! * 1000).format('yyyy-MM-DD HH:mm')}</TableCell>
                             <TableCell align="center">{u.admin ? 'Yes' : 'No'}</TableCell>
                             <TableCell align="center">{u.banned ? 'Yes' : 'No'}</TableCell>
                             <TableCell align="right">

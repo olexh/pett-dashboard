@@ -15,12 +15,12 @@ interface Props {
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const token = useSelector((state: RootState) => state.app.secret);
-    const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
+    const selectedBalance: Dashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
     const dispatch = useAppDispatch();
 
     const { data: balances, isLoading } = useBalance({ auth: token }, { refetchInterval: 10000 });
 
-    const handleSelectBalance = (balance: PettDashboard.Balance) => {
+    const handleSelectBalance = (balance: Dashboard.Balance) => {
         dispatch(setInState({ selectedBalance: balance }));
     };
 
@@ -44,7 +44,7 @@ const Component: FC<Props> = ({ className }) => {
             <Divider />
             {!isLoading ? (
                 balances &&
-                balances.map((b: PettDashboard.Balance, index) => (
+                balances.map((b: Dashboard.Balance, index) => (
                     <>
                         {index > 0 && <Divider />}
                         <BalanceItem

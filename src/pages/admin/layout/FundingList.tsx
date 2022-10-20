@@ -9,6 +9,7 @@ import {
     Divider,
     Grid,
     IconButton,
+    Link,
     Pagination,
     Paper,
     Table,
@@ -30,6 +31,7 @@ import { TableSkeleton } from '../../../components';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface Props {
     className?: string;
@@ -40,7 +42,7 @@ const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [openRefundAlert, setOpenRefundAlert] = useState(false);
-    const [selectedFunding, setSelectedFunding] = useState<PettDashboard.Funding>();
+    const [selectedFunding, setSelectedFunding] = useState<Dashboard.Funding>();
     const token = useSelector((state: RootState) => state.app.secret);
 
     const { data: funding, isLoading: isLoadingFunding } = useAdminFundingList(
@@ -52,8 +54,8 @@ const Component: FC<Props> = ({ className }) => {
         onSuccess: () => {
             enqueueSnackbar('Refund has been successfully made', { variant: 'success' });
         },
-        onError: () => {
-            enqueueSnackbar('Something went wrong', { variant: 'error' });
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
         },
     });
 
@@ -62,7 +64,7 @@ const Component: FC<Props> = ({ className }) => {
         setOpenRefundAlert(false);
     };
 
-    const handleRefundAlert = (f: PettDashboard.Funding) => {
+    const handleRefundAlert = (f: Dashboard.Funding) => {
         setSelectedFunding(f);
         setOpenRefundAlert(true);
     };
@@ -77,8 +79,7 @@ const Component: FC<Props> = ({ className }) => {
             <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Reference</TableCell>
-                        <TableCell align="center">User Ref</TableCell>
+                        <TableCell>Username</TableCell>
                         <TableCell align="center">Amount</TableCell>
                         <TableCell align="center">Comment</TableCell>
                         <TableCell align="center">Refunded</TableCell>
@@ -86,16 +87,17 @@ const Component: FC<Props> = ({ className }) => {
                         <TableCell align="center">Sent</TableCell>
                         <TableCell align="center">Tx Hash</TableCell>
                         <TableCell align="center">Created</TableCell>
-                        <TableCell align="right">Options</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {funding?.list.map((w: PettDashboard.Funding) => (
+                    {funding?.list.map((w: Dashboard.Funding) => (
                         <TableRow hover key={w.reference}>
                             <TableCell component="th" scope="row">
-                                {w.reference}
+                                <Link component={RouterLink} to={`/admin/user/${w.user.username}`}>
+                                    {w.user.username}
+                                </Link>
                             </TableCell>
-                            <TableCell align="center">{w.user}</TableCell>
                             <TableCell align="center">
                                 <Box display="flex" alignItems="center" justifyContent="center">
                                     <Avatar sx={{ width: 24, height: 24, marginRight: 1 }} src={w.coin.logo} />

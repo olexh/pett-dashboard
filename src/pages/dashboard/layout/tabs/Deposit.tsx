@@ -15,7 +15,7 @@ interface Props {
 
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
-    const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
+    const selectedBalance: Dashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
     return (
         <Grid className={className} container spacing={4}>

@@ -5,17 +5,19 @@ import cat from '../../assets/cat.png';
 import logo_transparent from '../../assets/logo_transparent.png';
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
-import { ChangePasswordDialog, LoginDialog, SignUpDialog } from './layout';
+import { ChangePasswordConfirmDialog, ChangePasswordDialog, LoginDialog, SignUpDialog } from './layout';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/Store';
 import { setInState } from '../../redux/actions/app';
+import { useParams } from 'react-router-dom';
 
 interface Props {
     className?: string;
 }
 
 const Component: FC<Props> = ({ className }) => {
+    const { resetToken } = useParams<{ resetToken?: string }>();
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
     const language = useSelector((state: RootState) => state.app.language);
@@ -54,7 +56,7 @@ const Component: FC<Props> = ({ className }) => {
             <Container className="container">
                 <img src={logo_transparent} alt="logo" />
                 <Typography variant="h3" marginY={2} color="white" align="center">
-                    {t('pettNetworkWebWallet')}
+                    {t('networkWebWallet')}
                 </Typography>
                 <Typography color="white" marginBottom={6} align="center">
                     {t('transactDigitalAssetsWithoutDownloadsAndInstallati')}
@@ -102,6 +104,7 @@ const Component: FC<Props> = ({ className }) => {
             />
             <SignUpDialog open={signUpOpen} setOpen={setSignUpOpen} loginOpen={openLogin} />
             <ChangePasswordDialog open={changePasswordOpen} setOpen={setChangePasswordOpen} loginOpen={openLogin} />
+            <ChangePasswordConfirmDialog open={resetToken !== undefined} token={resetToken!} />
         </div>
     );
 };

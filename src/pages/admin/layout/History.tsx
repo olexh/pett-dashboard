@@ -3,7 +3,13 @@ import styled from 'styled-components';
 import {
     Avatar,
     Box,
+    Button,
+    Dialog,
+    DialogContent,
     Divider,
+    Grid,
+    IconButton,
+    Link,
     Pagination,
     Paper,
     Table,
@@ -12,6 +18,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -19,8 +26,12 @@ import { RootState } from '../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
-import { useAdminHistory } from '../../../api';
+import { refund, useAdminHistory } from '../../../api';
 import { TableSkeleton } from '../../../components';
+import { useMutation } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface Props {
     className?: string;
@@ -28,7 +39,10 @@ interface Props {
 
 const Component: FC<Props> = ({ className }) => {
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
     const [page, setPage] = useState(1);
+    const [openRefundAlert, setOpenRefundAlert] = useState(false);
+    const [selectedHistory, setSelectedHistory] = useState<Dashboard.History>();
     const token = useSelector((state: RootState) => state.app.secret);
 
     const { data: history, isLoading: isLoadingHistory } = useAdminHistory(
@@ -36,22 +50,53 @@ const Component: FC<Props> = ({ className }) => {
         { refetchInterval: 10000 },
     );
 
+    const { mutate: makeRefund, isLoading: isLoadingRefund } = useMutation(refund, {
+        onSuccess: () => {
+            enqueueSnackbar('Refund has been successfully made', { variant: 'success' });
+        },
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
+        },
+    });
+
+    const handleRefund = () => {
+        makeRefund({ reference: selectedHistory!.event, token });
+        setOpenRefundAlert(false);
+    };
+
+    const handleRefundAlert = (h: Dashboard.History) => {
+        setSelectedHistory(h);
+        setOpenRefundAlert(true);
+    };
+
+    const handleCloseRefundAlert = () => {
+        setOpenRefundAlert(false);
+        setSelectedHistory(undefined);
+    };
+
     const table = (
         <TableContainer>
             <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Type</TableCell>
+                        <TableCell>Username</TableCell>
+                        <TableCell align="center">Type</TableCell>
                         <TableCell align="center">Tx Hash</TableCell>
                         <TableCell align="center">Date</TableCell>
                         <TableCell align="center">Amount</TableCell>
-                        <TableCell align="right">Status</TableCell>
+                        <TableCell align="center">Status</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {history?.list.map((h: PettDashboard.History) => (
+                    {history?.list.map((h: Dashboard.History) => (
                         <TableRow hover key={h.created}>
                             <TableCell component="th" scope="row">
+                                <Link component={RouterLink} to={`/admin/user/${h.user.username}`}>
+                                    {h.user.username}
+                                </Link>
+                            </TableCell>
+                            <TableCell align="center">
                                 {h.category.charAt(0).toUpperCase() + h.category.slice(1)}
                             </TableCell>
                             <TableCell align="center">{h.txid ? h.txid : '-'}</TableCell>
@@ -69,7 +114,19 @@ const Component: FC<Props> = ({ className }) => {
                                     />
                                 </Box>
                             </TableCell>
-                            <TableCell align="right">{h.status.charAt(0).toUpperCase() + h.status.slice(1)}</TableCell>
+                            <TableCell align="center">{h.status.charAt(0).toUpperCase() + h.status.slice(1)}</TableCell>
+                            <TableCell align="right">
+                                <Box display="flex" justifyContent="flex-end">
+                                    <Tooltip title="Refund">
+                                        <IconButton
+                                            onClick={() => handleRefundAlert(h)}
+                                            disabled={isLoadingRefund || h.category !== 'funding'}
+                                        >
+                                            <SettingsBackupRestoreIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -104,6 +161,41 @@ const Component: FC<Props> = ({ className }) => {
                     />
                 </Box>
             )}
+            <Dialog
+                maxWidth="sm"
+                fullWidth
+                open={openRefundAlert && Boolean(selectedHistory)}
+                onClose={handleCloseRefundAlert}
+            >
+                <DialogContent>
+                    <Grid container direction="column" spacing={2} textAlign="center">
+                        <Grid item md={12}>
+                            <Typography variant="h4">{t('refund')}</Typography>
+                        </Grid>
+                        <Grid item md={12}>
+                            <Typography align="center">{t('doYouWantToMakeRefund')}</Typography>
+                        </Grid>
+                        <Grid item container spacing={2} md={12} justifyContent="center">
+                            <Grid item md="auto">
+                                <Button color="secondary" disableElevation onClick={handleCloseRefundAlert}>
+                                    {t('cancel')}
+                                </Button>
+                            </Grid>
+                            <Grid item md="auto">
+                                <Button
+                                    color="secondary"
+                                    disableElevation
+                                    variant="contained"
+                                    onClick={handleRefund}
+                                    autoFocus
+                                >
+                                    {t('confirm')}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+            </Dialog>
         </Paper>
     );
 };

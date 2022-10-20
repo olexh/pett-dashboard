@@ -60,6 +60,7 @@ const App = ({ ...props }) => {
                             {profileData && profileData!.email_activated && <Navigation />}
                             <Switch>
                                 <Route path="/activate/:token" exact component={EmailConfirmation} />
+                                <Route path="/reset/:resetToken?" exact component={Login} />
                                 {(!profileData || !profileData!.email_activated) && (
                                     <>
                                         <Route path="/" exact component={Login} />

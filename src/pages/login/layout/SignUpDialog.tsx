@@ -6,6 +6,7 @@ import { LoadingButton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
 import { signUp } from '../../../api';
 import { Controller, useForm } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 
 interface Props {
     className?: string;
@@ -23,6 +24,7 @@ interface SignUpParams {
 
 const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
     const {
         register,
         handleSubmit,
@@ -37,8 +39,8 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
         isSuccess: isSuccessSignUp,
         data: signUpData,
     } = useMutation(signUp, {
-        onError: (e) => {
-            alert(e);
+        onError: (e: Error) => {
+            enqueueSnackbar(e?.message, { variant: 'error' });
         },
     });
 

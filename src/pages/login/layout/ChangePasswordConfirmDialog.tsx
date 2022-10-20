@@ -4,19 +4,20 @@ import { Button, Dialog, DialogContent, FormControl, Grid, TextField, Typography
 import { useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { useTranslation } from 'react-i18next';
-import { resetPassword as resetPasswordAPI } from '../../../api';
+import { resetPasswordConfirm as resetPasswordConfirmAPI } from '../../../api';
 import { Controller, useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { useSnackbar } from "notistack";
 
 interface Props {
     className?: string;
     open: boolean;
-    setOpen: (value: boolean) => void;
-    loginOpen: () => void;
+    token: string;
 }
 
-const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
+const Component: FC<Props> = ({ className, open, token }) => {
     const { t } = useTranslation();
+    const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
 
     const {
@@ -24,69 +25,91 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
         handleSubmit,
         control,
         formState: { errors: fieldsErrors },
-    } = useForm<{ email: string }>();
+    } = useForm<{ password: string; confirmPassword: string }>();
 
-    // change logic:
     const {
-        mutate: resetPassword,
-        isLoading: isLoadingResetPassword,
-        isSuccess: isSuccessResetPassword,
-        reset: resetMutation,
-    } = useMutation(resetPasswordAPI, {
+        mutate: resetPasswordConfirm,
+        isLoading: isLoadingResetPasswordConfirm,
+        isSuccess: isSuccessResetPasswordConfirm,
+    } = useMutation(resetPasswordConfirmAPI, {
         onError: (e: Error) => {
             enqueueSnackbar(e?.message, { variant: 'error' });
         },
     });
 
-    const handleLogin = (data: { email: string }) => {
-        resetPassword(data);
+    const handleMutation = (data: { password: string; confirmPassword: string }) => {
+        if (data.password === data.confirmPassword) {
+            resetPasswordConfirm({ token, password: data.password });
+        }
     };
 
     const handleClose = () => {
-        resetMutation();
-        setOpen(false);
+        history.push('/');
     };
     //
     return (
         <Dialog className={className} maxWidth="sm" fullWidth open={open} onClose={handleClose}>
             <DialogContent>
-                {!isSuccessResetPassword ? (
-                    <form onSubmit={handleSubmit(handleLogin)}>
+                {!isSuccessResetPasswordConfirm ? (
+                    <form onSubmit={handleSubmit(handleMutation)}>
                         <FormControl>
                             <Grid container spacing={2} textAlign="center" justifyContent="center">
                                 <Grid item md={12}>
-                                    <Typography variant="h4">{t('changePassword')}</Typography>
+                                    <Typography variant="h4">Change Password</Typography>
                                 </Grid>
                                 <Grid item md={12}>
-                                    <Typography align="center">{t('fillUpChangePassword')}</Typography>
+                                    <Typography align="center">
+                                        Please, fill up the fields to change password to your account.
+                                    </Typography>
                                 </Grid>
                                 <Grid item md={12} xs={12}>
                                     <Controller
-                                        name="email"
+                                        name="password"
                                         render={({ field: { value, ...rest } }) => (
                                             <TextField
                                                 {...rest}
                                                 value={value ?? ''}
-                                                id="email"
-                                                helperText={fieldsErrors.email ? fieldsErrors.email.message : undefined}
-                                                error={Boolean(fieldsErrors.email)}
+                                                id="password"
+                                                helperText={
+                                                    fieldsErrors.password ? fieldsErrors.password.message : undefined
+                                                }
+                                                error={Boolean(fieldsErrors.password)}
                                                 InputLabelProps={{ shrink: true }}
                                                 fullWidth
                                                 required
-                                                type="email"
-                                                placeholder={t('writeYourEmail')}
-                                                label={t('email')}
-                                                {...register('email')}
+                                                type="password"
+                                                placeholder={t('typeNewPassword')}
+                                                label={t('password')}
+                                                {...register('password')}
                                             />
                                         )}
                                         control={control}
-                                        rules={{
-                                            required: 'Email required',
-                                            pattern: {
-                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                message: 'invalid email address',
-                                            },
-                                        }}
+                                    />
+                                </Grid>
+                                <Grid item md={12} xs={12}>
+                                    <Controller
+                                        name="confirmPassword"
+                                        render={({ field: { value, ...rest } }) => (
+                                            <TextField
+                                                {...rest}
+                                                value={value ?? ''}
+                                                id="confirmPassword"
+                                                helperText={
+                                                    fieldsErrors.confirmPassword
+                                                        ? fieldsErrors.confirmPassword.message
+                                                        : undefined
+                                                }
+                                                error={Boolean(fieldsErrors.confirmPassword)}
+                                                InputLabelProps={{ shrink: true }}
+                                                fullWidth
+                                                required
+                                                type="password"
+                                                placeholder={t('confirmNewPassword')}
+                                                label={t('confirmPassword')}
+                                                {...register('confirmPassword')}
+                                            />
+                                        )}
+                                        control={control}
                                     />
                                 </Grid>
                                 <Grid item md={4} xs={6}>
@@ -94,16 +117,16 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
                                         variant="outlined"
                                         fullWidth
                                         size="large"
-                                        onClick={loginOpen}
+                                        onClick={handleClose}
                                         disableElevation
                                         color="secondary"
                                     >
-                                        {t('cancel')}
+                                        Cancel
                                     </Button>
                                 </Grid>
                                 <Grid item md={4} xs={6}>
                                     <LoadingButton
-                                        loading={isLoadingResetPassword}
+                                        loading={isLoadingResetPasswordConfirm}
                                         loadingPosition="start"
                                         variant="contained"
                                         size="large"
@@ -121,10 +144,10 @@ const Component: FC<Props> = ({ className, open, setOpen, loginOpen }) => {
                 ) : (
                     <Grid container direction="column" spacing={2} textAlign="center">
                         <Grid item md={12}>
-                            <Typography variant="h4">{t('changePassword')}</Typography>
+                            <Typography variant="h4">{t('congratulations')}</Typography>
                         </Grid>
                         <Grid item md={12}>
-                            <Typography align="center">{t('sentResetPasswordLink')}</Typography>
+                            <Typography align="center">{t('yourPasswordChanged')}</Typography>
                         </Grid>
                         <Grid item md={12}>
                             <Button variant="contained" onClick={handleClose} disableElevation color="secondary">

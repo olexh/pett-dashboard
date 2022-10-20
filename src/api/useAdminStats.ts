@@ -3,26 +3,30 @@ import { useQuery } from '@tanstack/react-query';
 
 type Params = {
     auth: string;
-    page: number;
 };
 
-//TODO: move to types
 interface Response {
-    pagination: {
-        pages: number;
+    users: {
         total: number;
-        current: number;
+        banned: number;
+        admin: number;
     };
-    list: Dashboard.History[];
+    coins: {
+        available: number;
+        frozen: number;
+        fundings: number;
+        coin: Dashboard.Coin;
+        usd: { withdrawals: number; available: number; frozen: number; fundings: number };
+        withdrawals: number;
+    }[];
 }
 
 async function fetch(params: Params) {
-    const { auth, page } = params;
+    const { auth } = params;
 
     try {
-        const { data } = await axios.get(`${axios.defaults.baseURL}/admin/history`, {
+        const { data } = await axios.get(`${axios.defaults.baseURL}/admin/stats`, {
             headers: { auth },
-            params: { page },
         });
 
         return data;

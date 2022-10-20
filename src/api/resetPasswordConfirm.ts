@@ -1,20 +1,14 @@
 import axios from 'axios';
 
 interface Params {
-    user: Dashboard.User;
-    type: 'admin' | 'unadmin';
-    auth: string;
+    password: string;
+    token: string;
 }
 
 export default async function (params: Params) {
-    const { auth, user, type } = params;
-
     try {
-        const { data: response } = await axios.post(
-            `${axios.defaults.baseURL}/admin/user/${user.username}/${type}`,
-            {},
-            { headers: { auth } },
-        );
+        const { data: response } = await axios.post(`${axios.defaults.baseURL}/auth/reset/confirm`, params);
+
         return response;
     } catch (e) {
         if (axios.isAxiosError(e)) {

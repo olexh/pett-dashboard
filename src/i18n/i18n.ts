@@ -11,7 +11,7 @@ const createI18n = (language: string): i18nInstance => {
             loadPath: '/locales/{{lng}}/{{ns}}.json',
         },
         react: {
-            useSuspense: false,
+            useSuspense: true,
         },
         lng: language,
         fallbackLng: language,

@@ -22,6 +22,9 @@ import login from './login';
 import useEmailConfirmation from './useEmailConfirmation';
 import refund from './refund';
 import changePassword from './changePassword';
+import resetPassword from './resetPassword';
+import resetPasswordConfirm from './resetPasswordConfirm';
+import useAdminStats from './useAdminStats';
 
 export {
     useProfile,
@@ -32,6 +35,7 @@ export {
     useUsersList,
     useAdminWithdrawalList,
     useAdminFundingList,
+    useAdminStats,
     useBank,
     useBalance,
     useHistory,
@@ -45,4 +49,6 @@ export {
     useEmailConfirmation,
     login,
     changePassword,
+    resetPassword,
+    resetPasswordConfirm,
 };

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 import { Box, Divider, FormControlLabel, Grid, Paper, Switch, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -25,15 +25,18 @@ const Component: FC<Props> = ({ className }) => {
     const token = useSelector((state: RootState) => state.app.secret);
 
     // TODO: test
-    const {
-        mutate: request,
-        isLoading: isLoadingRequest,
-        data: requestData,
-        error: requestError,
-        isError: isErrorRequest,
-    } = useMutation(withdrawalRequest, {
-        onError: (e) => {
-            alert(e);
+    const { mutate: request, isLoading: isLoadingRequest } = useMutation(withdrawalRequest, {
+        onError: (e: Error) => {
+            enqueueSnackbar(e.message, { variant: 'error' });
+            setTxid('');
+            setComment('');
+            setReference('');
+        },
+        onSuccess: () => {
+            enqueueSnackbar('Withdrawal request has been successfully processed', { variant: 'success' });
+            setTxid('');
+            setComment('');
+            setReference('');
         },
     });
 
@@ -62,24 +65,6 @@ const Component: FC<Props> = ({ className }) => {
     const handleChangeRefund = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsRefunded(event.target.checked);
     };
-
-    useEffect(() => {
-        if (requestData && !isLoadingRequest) {
-            enqueueSnackbar('Withdrawal request has been successfully processed', { variant: 'success' });
-            setTxid('');
-            setComment('');
-            setReference('');
-        }
-    }, [requestData]);
-
-    useEffect(() => {
-        if (requestError && isErrorRequest) {
-            enqueueSnackbar('Something went wrong', { variant: 'error' });
-            setTxid('');
-            setComment('');
-            setReference('');
-        }
-    }, [requestError]);
 
     return (
         <Grid className={className} container justifyContent="center">

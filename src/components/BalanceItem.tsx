@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Avatar, Box, ButtonBase, ButtonBaseProps, Grid, Typography } from '@mui/material';
+import { Avatar, Box, ButtonBase, ButtonBaseProps, Grid, Tooltip, Typography } from '@mui/material';
 import { NumericFormat } from 'react-number-format';
-import LockIcon from '@mui/icons-material/Lock';
 
-interface Props extends PettDashboard.Balance, ButtonBaseProps {
+interface Props extends Dashboard.Balance, ButtonBaseProps {
     className?: string;
     selected?: boolean;
 }
@@ -26,42 +25,55 @@ const Component: FC<Props> = ({ className, selected, coin, available, frozen, us
                         </Typography>
                     </Grid>
                     <Grid item md="auto" sm="auto" xs="auto">
-                        <Typography fontWeight={700}>
-                            <NumericFormat
-                                value={available}
-                                decimalScale={2}
-                                fixedDecimalScale
-                                thousandSeparator
-                                displayType="text"
-                            />{' '}
-                            <Typography component="span" color="textSecondary" fontWeight={700}>
-                                /{' '}
-                                <Box display="inline-flex" alignItems="flex-start">
+                        <Typography>
+                            <Tooltip title="Available">
+                                <Typography fontWeight={700} component="span">
                                     <NumericFormat
-                                        value={frozen}
+                                        value={available}
                                         decimalScale={2}
                                         fixedDecimalScale
                                         thousandSeparator
                                         displayType="text"
                                     />
-                                    <LockIcon fontSize="small" />
-                                </Box>
-                            </Typography>
-                            {usd !== null && (
-                                <>
-                                    {' '}
-                                    <Typography component="span" color="#32a96d" fontWeight={700}>
+                                </Typography>
+                            </Tooltip>{' '}
+                            <Tooltip title="Frozen">
+                                <Typography component="span" color="textSecondary" fontWeight={700}>
+                                    /{' '}
+                                    <Box display="inline-flex" alignItems="flex-start">
                                         <NumericFormat
-                                            value={usd}
+                                            value={frozen}
                                             decimalScale={2}
                                             fixedDecimalScale
-                                            suffix="$"
                                             thousandSeparator
                                             displayType="text"
                                         />
-                                    </Typography>
-                                </>
-                            )}
+                                    </Box>
+                                </Typography>
+                            </Tooltip>
+                        </Typography>
+                        <Typography fontWeight={700} color="#32a96d" variant="subtitle2">
+                            <NumericFormat
+                                value={usd.available}
+                                decimalScale={2}
+                                suffix="$"
+                                fixedDecimalScale
+                                thousandSeparator
+                                displayType="text"
+                            />{' '}
+                            <Typography component="span" color="textSecondary" variant="subtitle2" fontWeight={700}>
+                                /{' '}
+                                <Box display="inline-flex" alignItems="flex-start">
+                                    <NumericFormat
+                                        value={usd.frozen}
+                                        decimalScale={2}
+                                        suffix="$"
+                                        fixedDecimalScale
+                                        thousandSeparator
+                                        displayType="text"
+                                    />
+                                </Box>
+                            </Typography>
                         </Typography>
                     </Grid>
                 </Grid>

@@ -6,7 +6,7 @@ interface ReducerState {
     created?: number;
     reference?: string;
     secret?: string;
-    selectedBalance?: PettDashboard.Balance;
+    selectedBalance?: Dashboard.Balance;
     language: 'en' | 'ko';
 }
 

@@ -5,6 +5,7 @@ import {
     Box,
     Divider,
     IconButton,
+    Link,
     Pagination,
     Paper,
     Table,
@@ -21,7 +22,7 @@ import { RootState } from '../../../redux/Store';
 import moment from 'moment';
 import { NumericFormat } from 'react-number-format';
 import CheckIcon from '@mui/icons-material/Check';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAdminWithdrawalList } from '../../../api';
 import { TableSkeleton } from '../../../components';
@@ -46,7 +47,7 @@ const Component: FC<Props> = ({ className }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Reference</TableCell>
-                        <TableCell align="center">User Ref</TableCell>
+                        <TableCell align="center">Username</TableCell>
                         <TableCell align="center">Amount</TableCell>
                         <TableCell align="center">Comment</TableCell>
                         <TableCell align="center">Refunded</TableCell>
@@ -54,16 +55,20 @@ const Component: FC<Props> = ({ className }) => {
                         <TableCell align="center">Sent</TableCell>
                         <TableCell align="center">Tx Hash</TableCell>
                         <TableCell align="center">Created</TableCell>
-                        <TableCell align="right">Options</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {withdrawal?.list.map((w: PettDashboard.Withdrawal) => (
+                    {withdrawal?.list.map((w: Dashboard.Withdrawal) => (
                         <TableRow hover key={w.reference}>
                             <TableCell component="th" scope="row">
                                 {w.reference}
                             </TableCell>
-                            <TableCell align="center">{w.user}</TableCell>
+                            <TableCell align="center">
+                                <Link component={RouterLink} to={`/admin/user/${w.user.username}`}>
+                                    {w.user.username}
+                                </Link>
+                            </TableCell>
                             <TableCell align="center">
                                 <Box display="flex" alignItems="center" justifyContent="center">
                                     <Avatar sx={{ width: 24, height: 24, marginRight: 1 }} src={w.coin.logo} />
@@ -88,7 +93,7 @@ const Component: FC<Props> = ({ className }) => {
                                     <Tooltip title="Process Request">
                                         <IconButton
                                             disabled={w.refunded || w.sent}
-                                            component={Link}
+                                            component={RouterLink}
                                             to={`/admin/request/${w.reference}`}
                                         >
                                             <CheckIcon />

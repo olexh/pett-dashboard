@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import { Button, Dialog, DialogContent, FormControl, Grid, TextField, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { useAppDispatch } from '../../../redux/Store';
 import { useTranslation } from 'react-i18next';
 import { login } from '../../../api';
 import { Controller, useForm } from 'react-hook-form';
-import { ChangePasswordDialog } from './index';
+import { useSnackbar } from 'notistack';
 
 interface Props {
     className?: string;
@@ -25,6 +25,7 @@ interface LoginParams {
 
 const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePasswordOpen }) => {
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useAppDispatch();
 
     const {
@@ -40,8 +41,8 @@ const Component: FC<Props> = ({ className, open, setOpen, signUpOpen, changePass
         isSuccess: isSuccessLogin,
         data: loginData,
     } = useMutation(login, {
-        onError: (e) => {
-            alert(e);
+        onError: (e: Error) => {
+            enqueueSnackbar(e?.message, { variant: 'error' });
         },
     });
 

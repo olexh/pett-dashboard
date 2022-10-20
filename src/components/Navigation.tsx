@@ -13,7 +13,7 @@ import {
     useMediaQuery,
     useScrollTrigger,
 } from '@mui/material';
-import logo from '../assets/logo.svg';
+import logoImg from '../assets/logo.svg';
 import MenuIcon from '@mui/icons-material/Menu';
 import MobileDrawer from './MobileDrawer';
 import { RootState, useAppDispatch } from '../redux/Store';
@@ -57,11 +57,11 @@ const Navigation: FC<Props> = ({ className }) => {
     const token = useSelector((state: RootState) => state.app.secret);
     const { data: profileData } = useProfile({ auth: token }, { retry: false });
 
-    const logoPETT = (
-        <div className="logo-pett">
-            <img src={logo} alt={t('logo')} width={39} height={39} />
+    const logo = (
+        <div className="logo">
+            <img src={logoImg} alt={t('logo')} width={39} height={39} />
             <Typography variant="h6" display="inline" paddingLeft={1} fontWeight={400}>
-                {t('pettNetwork')}
+                {t('network')}
             </Typography>
         </div>
     );
@@ -92,7 +92,7 @@ const Navigation: FC<Props> = ({ className }) => {
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item md xs>
                                     <ButtonBase component={RouterLink} to="/" className="logo-btn">
-                                        {logoPETT}
+                                        {logo}
                                     </ButtonBase>
                                 </Grid>
                                 <Grid item md="auto">
@@ -123,7 +123,7 @@ const Navigation: FC<Props> = ({ className }) => {
                         <div className="mobile-menu-box">
                             <Container className="mobile">
                                 <ButtonBase style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img src={logo} className="mobile-logo" alt="logo" />
+                                    <img src={logoImg} className="mobile-logo" alt="logo" />
                                 </ButtonBase>
                                 <IconButton color="inherit" size="large" onClick={() => setIsDrawerOpened(true)}>
                                     <MenuIcon />
@@ -138,7 +138,7 @@ const Navigation: FC<Props> = ({ className }) => {
 };
 
 export default styled(Navigation)`
-    .logo-pett {
+    .logo {
         display: flex;
         align-items: center;
     }

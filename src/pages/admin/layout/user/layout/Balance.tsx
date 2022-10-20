@@ -26,7 +26,7 @@ const Component: FC<Props> = ({ className }) => {
             <Divider />
             {!isLoading ? (
                 balances &&
-                balances.map((b: PettDashboard.Balance, index) => (
+                balances.map((b: Dashboard.Balance, index) => (
                     <>
                         {index > 0 && <Divider />}
                         <BalanceItem disabled key={b.reference} {...b} />

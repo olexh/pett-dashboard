@@ -20,7 +20,7 @@ const Component: FC<Props> = ({ className }) => {
     const token = useSelector((state: RootState) => state.app.secret);
     const [address, setAddress] = useState('');
     const [amount, setAmount] = useState('');
-    const selectedBalance: PettDashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
+    const selectedBalance: Dashboard.Balance = useSelector((state: RootState) => state.app.selectedBalance);
 
     // TODO: test
     const {

@@ -11,8 +11,19 @@ async function fetch(params: Params) {
         const { data } = await axios.post(`${axios.defaults.baseURL}/auth/activate`, { token: params.token });
         return data;
     } catch (e) {
-        console.error(e);
-        throw e;
+        if (axios.isAxiosError(e)) {
+            console.error(e.response?.data);
+
+            if (e.response?.data) {
+                throw e.response?.data;
+            } else {
+                throw e;
+            }
+        } else {
+            console.error('unexpected error: ', e);
+
+            throw e;
+        }
     }
 }
 

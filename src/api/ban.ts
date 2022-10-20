@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 interface Params {
-    user: PettDashboard.User;
+    user: Dashboard.User;
     type: 'ban' | 'unban';
     auth: string;
 }
@@ -17,7 +17,18 @@ export default async function (params: Params) {
         );
         return response;
     } catch (e) {
-        console.error(e);
-        throw e;
+        if (axios.isAxiosError(e)) {
+            console.error(e.response?.data);
+
+            if (e.response?.data) {
+                throw e.response?.data;
+            } else {
+                throw e;
+            }
+        } else {
+            console.error('unexpected error: ', e);
+
+            throw e;
+        }
     }
 }

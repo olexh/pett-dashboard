@@ -102,7 +102,7 @@ const Component: FC<Props> = ({ className }) => {
                                     Created
                                 </Typography>
                                 <Typography variant="body2" fontWeight={700}>
-                                    {moment(info.created * 1000).format('yyyy-MM-DD HH:mm')}
+                                    {moment(info.created! * 1000).format('yyyy-MM-DD HH:mm')}
                                 </Typography>
                             </Grid>
                             <Grid item md={12} sm={12} xs={12}>

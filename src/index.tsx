@@ -25,7 +25,9 @@ ReactDOM.render(
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
-                    <App />
+                    <React.Suspense fallback="Loading...">
+                        <App />
+                    </React.Suspense>
                 </PersistGate>
             </Provider>
         </QueryClientProvider>

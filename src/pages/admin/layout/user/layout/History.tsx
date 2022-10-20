@@ -51,7 +51,7 @@ const Component: FC<Props> = ({ className }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {history?.list.map((h: PettDashboard.History) => (
+                    {history?.list.map((h: Dashboard.History) => (
                         <TableRow hover key={h.txid}>
                             <TableCell component="th" scope="row">
                                 {h.category.charAt(0).toUpperCase() + h.category.slice(1)}
